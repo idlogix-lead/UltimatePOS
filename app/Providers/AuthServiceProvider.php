@@ -27,7 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
-        //haris
+        //haris time limit added
         Passport::personalAccessTokensExpireIn(Carbon::now()->addHours(24));
 
         Gate::before(function ($user, $ability) {

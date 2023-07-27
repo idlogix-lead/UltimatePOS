@@ -17,7 +17,14 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get("/token",function(){
-    $user = User::where("id",1)->first();
-    return $user->createToken("auth_token")->accessToken;
+Route::post("/login",function(Request $request){
+    $data = $request->validate([
+        "username" => "required",
+        "password" => "required",
+    ]);
+
+    $user = User::where("username",$data['username'])->first();
+    
+    // return $user->createToken("auth_token")->accessToken;
+    return $user;
 });
