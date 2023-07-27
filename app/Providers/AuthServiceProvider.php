@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Providers;
-
+use Carbon\Carbon;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Passport;
@@ -29,7 +29,7 @@ class AuthServiceProvider extends ServiceProvider
         Passport::routes();
         //haris
         Passport::personalAccessTokensExpireIn(Carbon::now()->addHours(24));
-        
+
         Gate::before(function ($user, $ability) {
             if (in_array($ability, ['backup', 'superadmin', 
                 'manage_modules'])) {
