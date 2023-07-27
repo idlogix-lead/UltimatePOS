@@ -573,7 +573,6 @@ $(document).ready(function() {
         $(".contact_modal").find('.select2').each( function(){
             $(this).select2();
         });
-
         $('form#contact_add_form, form#contact_edit_form')
             .submit(function(e) {
                 e.preventDefault();
@@ -605,10 +604,11 @@ $(document).ready(function() {
                     },
                 },
                 submitHandler: function(form) {
+                    //haris /pos/public/check-mobile
                     e.preventDefault();
                     $.ajax({
                         method: 'POST',
-                        url: '/pos/public/check-mobile',
+                        url: 'check-mobile',
                         dataType: 'json',
                         data: {
                             contact_id: function() {

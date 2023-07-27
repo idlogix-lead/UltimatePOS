@@ -27,7 +27,9 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Passport::routes();
-
+        //haris
+        Passport::personalAccessTokensExpireIn(Carbon::now()->addHours(24));
+        
         Gate::before(function ($user, $ability) {
             if (in_array($ability, ['backup', 'superadmin', 
                 'manage_modules'])) {

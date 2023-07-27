@@ -109,9 +109,10 @@ $(document).ready(function() {
                 },
             },
             submitHandler: function(form) {
+                //haris /pos/public
                 $.ajax({
                     method: 'POST',
-                    url: '/pos/public/check-mobile',
+                    url: 'check-mobile',
                     dataType: 'json',
                     data: {
                         contact_id: function() {
