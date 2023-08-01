@@ -3147,7 +3147,7 @@ class ReportController extends Controller
         }
 
         if (!empty($request->location_id)) {
-            $query->where('sale.location_id', request()->location_id);
+            $query->where('sale.location_id', $request->location_id);
         }
 
         if (!empty($request->start_date) && !empty($request->end_date)) {
