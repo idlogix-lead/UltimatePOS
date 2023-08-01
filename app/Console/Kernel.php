@@ -17,6 +17,8 @@ class Kernel extends ConsoleKernel
     {
         $env = config('app.env');
         $email = config('mail.username');
+        //haris added this
+        $schedule->command('passport:purge')->hourly();
 
         if ($env === 'live') {
             //Scheduling backup, specify the time when the backup will get cleaned & time when it will run.
@@ -27,6 +29,7 @@ class Kernel extends ConsoleKernel
             $schedule->command('pos:updateRewardPoints')->dailyAt('23:45');
 
             $schedule->command('pos:autoSendPaymentReminder')->dailyAt('8:00');
+
         }
 
         if ($env === 'demo') {
