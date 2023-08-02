@@ -9,6 +9,7 @@
     }
     tr th,td{
         text-align:center;
+        width:50%;
     }
     tr th{
         background-color:black;

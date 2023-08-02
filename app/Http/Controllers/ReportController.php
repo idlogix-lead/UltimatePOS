@@ -57,6 +57,24 @@ class ReportController extends Controller
         $this->businessUtil = $businessUtil;
     }
 
+    static function getStockBySellingPriceApi(Request $request,$api = [])
+    {
+        $business_id = $request->user()->business_id;
+        $start_date = $request->get('start_date');
+        $end_date = $request->get('end_date');
+        $location_id = $request->get('location_id');
+
+        $day_before_start_date = \Carbon::createFromFormat('Y-m-d', $start_date)->subDay()->format('Y-m-d');
+
+        $opening_stock_by_sp =  $api["t"]->getOpeningClosingStock($business_id, $day_before_start_date, $location_id, true, true);
+
+        $closing_stock_by_sp = $api["t"]->getOpeningClosingStock($business_id, $end_date, $location_id, false, true);
+
+        return [
+            'opening_stock_by_sp' => $opening_stock_by_sp,
+            'closing_stock_by_sp' => $closing_stock_by_sp,
+        ];
+    }
     public function getStockBySellingPrice(Request $request)
     {
         $business_id = $request->session()->get('user.business_id');

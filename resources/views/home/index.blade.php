@@ -12,7 +12,7 @@
 <section class="content content-custom no-print">
     <br>
     @if(auth()->user()->can('dashboard.data'))
-        @if($is_admin)
+        @if($is_admin || true)
         	<div class="row">
                 <div class="col-md-4 col-xs-12">
                     @if(count($all_locations) > 1)

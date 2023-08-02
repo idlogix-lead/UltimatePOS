@@ -18,9 +18,9 @@
                             {{date("m/d/Y",strtotime($record->transaction_date2))}}
                         </td>
                         <td>
-                            {{ round(intval(strip_tags($record->gross_profit)),2) }}
+                            {{ round(floatval(strip_tags($record->gross_profit)),2) }}
                             @php
-                                $total += intval(strip_tags($record->gross_profit));
+                                $total += floatval(strip_tags($record->gross_profit));
                             @endphp
                         </td>
                     </tr>

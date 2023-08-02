@@ -24,6 +24,8 @@ Route::middleware('auth:api')->group(function(){
     });
     Route::post("/report/profitloss/{by?}", [ApiController::class,"ProfitLossReportBy"]);
     Route::post("/report/businessprofitloss", [ApiController::class,"BusinessProfitLoss"]);
+    Route::post("/report/getLocations",[ApiController::class, "GetLocations"]);
+    Route::post("/report/salepurchase",[ApiController::class, "SalePurchase"]);
     // Route::get('/reports/get-profit/{by?}', 'ApiController@getProfit');
 });
 
