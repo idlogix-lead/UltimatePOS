@@ -78,7 +78,7 @@ class ApiController extends Controller
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.profit_loss_details', compact('data'))->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(),$request),"BusinessProfitLoss",$request->user()->business->date_format);
 
     }
-    //Overall business Profit Loss Report by categories pdf
+    //Overall business Profit Loss Report by categories pdf 
     public function ProfitLossReportBy(Request $request,$by="product"){
         if (! $request->user()->can('profit_loss_report.view')) {
             return Response::json([
