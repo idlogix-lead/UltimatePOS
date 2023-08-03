@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Knuckles\Scribe\Exceptions\CouldntFindFactory;
+use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
+use Knuckles\Scribe\ScribeServiceProvider;
 use Knuckles\Scribe\Tools\ConsoleOutputUtils as c;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Local\LocalFilesystemAdapter;
@@ -105,8 +107,12 @@ class Utils
             if (is_array($uses)) {
                 return $uses;
             } elseif (is_string($uses)) {
-                [$class, $method] = explode('@', $uses);
-                
+                $usesArray = explode('@', $uses);
+                if (count($usesArray) < 2) {
+                    throw CouldntGetRouteDetails::new();
+                }
+                [$class, $method] = $usesArray;
+
                 // Support for the Laravel Actions package, docblock should be put on the asController method
                 if ($method === '__invoke' && method_exists($class, 'asController'))
                 {
@@ -229,6 +235,9 @@ class Utils
      */
     public static function getReflectedRouteMethod(array $routeControllerAndMethod): ReflectionFunctionAbstract
     {
+        if (count($routeControllerAndMethod) < 2) {
+            throw CouldntGetRouteDetails::new();
+        }
         [$class, $method] = $routeControllerAndMethod;
 
         if ($class instanceof Closure) {
@@ -345,6 +354,32 @@ class Utils
         );
     }
 
+    /**
+     * Like Laravel's trans/__ function, but will fallback to using the default translation if translation fails.
+     * For instance, if the user's locale is DE, but they have no DE strings defined,
+     * Laravel simply renders the translation key.
+     * Instead, we render the EN version.
+     */
+    public static function trans(string $key, array $replace = [])
+    {
+        // We only load our custom translation layer if we really need it
+        if (!ScribeServiceProvider::$customTranslationLayerLoaded) {
+            (new ScribeServiceProvider(app()))->loadCustomTranslationLayer();
+        }
+
+        $translation = trans($key, $replace);
+
+        if ($translation === $key || $translation === null) {
+            $translation = trans($key, $replace, 'en');
+        }
+
+
+        if ($translation === $key) {
+            throw new \Exception("Translation not found for $key. You can add a translation for this in your `lang/scribe.php`, but this is likely a problem with the package. Please open an issue.");
+        }
+
+        return $translation;
+    }
 }
 
 function getTopLevelItemsFromMixedOrderList(array $mixedList): array

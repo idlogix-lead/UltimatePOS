@@ -82,6 +82,14 @@ class GetFromInlineValidatorBase extends Strategy
                         $rulesList[] = $arrayItem->value->value;
                     }
 
+                    // Try to extract Enum rule
+                    else if (
+                        function_exists('enum_exists') &&
+                        ($enum = $this->extractEnumClassFromArrayItem($arrayItem)) &&
+                        enum_exists($enum) && method_exists($enum, 'tryFrom')
+                    ) {
+                        $rulesList[] = 'in:' . implode(',', array_map(fn ($case) => $case->value, $enum::cases()));
+                    }
                 }
                 $rules[$paramName] = join('|', $rulesList);
             } else {
@@ -89,26 +97,62 @@ class GetFromInlineValidatorBase extends Strategy
                 continue;
             }
 
-            $description = $example = null;
+            $dataFromComment = [];
             $comments = join("\n", array_map(
                     fn($comment) => ltrim(ltrim($comment->getReformattedText(), "/")),
                     $item->getComments()
-                )
-            );
+                ));
 
             if ($comments) {
-                $description = trim(str_replace(['No-example.', 'No-example'], '', $comments));
-                $example = null;
-                if (preg_match('/(.*\s+|^)Example:\s*([\s\S]+)\s*/s', $description, $matches)) {
-                    $description = trim($matches[1]);
-                    $example = $matches[2];
+                if (str_contains($comments, 'No-example')) $dataFromComment['example'] = null;
+
+                $dataFromComment['description'] = trim(str_replace(['No-example.', 'No-example'], '', $comments));
+                if (preg_match('/(.*\s+|^)Example:\s*([\s\S]+)\s*/s', $dataFromComment['description'], $matches)) {
+                    $dataFromComment['description'] = trim($matches[1]);
+                    $dataFromComment['example'] = $matches[2];
                 }
             }
 
-            $customParameterData[$paramName] = compact('description', 'example');
+            $customParameterData[$paramName] = $dataFromComment;
         }
 
         return [$rules, $customParameterData];
+    }
+
+    protected function extractEnumClassFromArrayItem(Node\Expr\ArrayItem $arrayItem): ?string
+    {
+        $args = [];
+
+        // Enum rule with the form "new Enum(...)"
+        if ($arrayItem->value instanceof Node\Expr\New_ &&
+            $arrayItem->value->class instanceof Node\Name &&
+            last($arrayItem->value->class->parts) === 'Enum'
+        ) {
+            $args = $arrayItem->value->args;
+        }
+
+        // Enum rule with the form "Rule::enum(...)"
+        else if ($arrayItem->value instanceof Node\Expr\StaticCall &&
+            $arrayItem->value->class instanceof Node\Name &&
+            last($arrayItem->value->class->parts) === 'Rule' &&
+            $arrayItem->value->name instanceof Node\Identifier &&
+            $arrayItem->value->name->name === 'enum'
+        ) {
+            $args = $arrayItem->value->args;
+        }
+
+        if (count($args) !== 1 || !$args[0] instanceof Node\Arg) return null;
+
+        $arg = $args[0];
+        if ($arg->value instanceof Node\Expr\ClassConstFetch &&
+            $arg->value->class instanceof Node\Name
+        ) {
+            return '\\' . implode('\\', $arg->value->class->parts);
+        } else if ($arg->value instanceof Node\Scalar\String_) {
+            return $arg->value->value;
+        }
+
+        return null;
     }
 
     protected function getMissingCustomDataMessage($parameterName)

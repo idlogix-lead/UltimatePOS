@@ -4,22 +4,24 @@ declare(strict_types=1);
 
 namespace OpenAI\Laravel;
 
+use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 use OpenAI;
 use OpenAI\Client;
+use OpenAI\Contracts\ClientContract;
 use OpenAI\Laravel\Exceptions\ApiKeyIsMissing;
 
 /**
  * @internal
  */
-final class ServiceProvider extends BaseServiceProvider
+final class ServiceProvider extends BaseServiceProvider implements DeferrableProvider
 {
     /**
      * Register any application services.
      */
     public function register(): void
     {
-        $this->app->singleton(Client::class, static function (): Client {
+        $this->app->singleton(ClientContract::class, static function (): Client {
             $apiKey = config('openai.api_key');
             $organization = config('openai.organization');
 
@@ -30,7 +32,8 @@ final class ServiceProvider extends BaseServiceProvider
             return OpenAI::client($apiKey, $organization);
         });
 
-        $this->app->alias(Client::class, 'openai');
+        $this->app->alias(ClientContract::class, 'openai');
+        $this->app->alias(ClientContract::class, Client::class);
     }
 
     /**
@@ -38,9 +41,11 @@ final class ServiceProvider extends BaseServiceProvider
      */
     public function boot(): void
     {
-        $this->publishes([
-            __DIR__.'/../config/openai.php' => config_path('openai.php'),
-        ]);
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/openai.php' => config_path('openai.php'),
+            ]);
+        }
     }
 
     /**
@@ -52,6 +57,8 @@ final class ServiceProvider extends BaseServiceProvider
     {
         return [
             Client::class,
+            ClientContract::class,
+            'openai',
         ];
     }
 }

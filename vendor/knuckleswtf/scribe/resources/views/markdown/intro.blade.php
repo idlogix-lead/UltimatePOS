@@ -1,9 +1,12 @@
-# Introduction
+@php
+    use Knuckles\Scribe\Tools\Utils as u;
+@endphp
+# {{ u::trans("scribe::headings.introduction") }}
 
 {!! $description !!}
 
 <aside>
-    <strong>Base URL</strong>: <code>{!! $baseUrl !!}</code>
+    <strong>{{ u::trans("scribe::labels.base_url") }}</strong>: <code>{!! $baseUrl !!}</code>
 </aside>
 
 {!! $introText !!}

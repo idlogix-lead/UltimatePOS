@@ -12,6 +12,91 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Removed
 
+# 4.22.0 (1 July 2023)
+## Added
+- Make included package attributes extensible ([#680](https://github.com/knuckleswtf/scribe/pull/680))
+
+## Fixed
+- Ensure example code supports multipart/form-data without files ([#685](https://github.com/knuckleswtf/scribe/pull/685))
+- Fix path traversal on Laravel 10 ([#686](https://github.com/knuckleswtf/scribe/pull/686))
+- Properly support floats in docs UI ([#693](https://github.com/knuckleswtf/scribe/pull/693))
+- Properly normalise URLs with multi-word Eloquent parameters ([#670](https://github.com/knuckleswtf/scribe/pull/670))
+- Also show empty array query parameters in Postman ([#691](https://github.com/knuckleswtf/scribe/pull/691))
+
+
+# 4.21.2 (5 June 2023)
+## Fixed
+- Typehint interface in CustomTranslationsLoader for maximum compatibility ([#679](https://github.com/knuckleswtf/scribe/pull/679))
+
+
+# 4.21.1 (3 June 2023)
+## Fixed
+- Load translations on demand to get around false negative for `runningInConsole()` ([963340f2](https://github.com/knuckleswtf/scribe/commit/963340f2bea654bb267286f807bcdf15b699d06e))
+- Correctly set pagination data on collections in `#[ResponseFromApiResource]` ([d53776bee](https://github.com/knuckleswtf/scribe/commit/d53776bee25daff8f0070e49a32b127b4de21c9c))
+
+# 4.21.0 (29 May 2023)
+## Added
+- API resources: Infer model name from `@mixin` ([f0ed9565](https://github.com/knuckleswtf/scribe/commit/f0ed95653b401b188e76e6ba9057406710f2cc2b))
+- New translation layer ([#673](https://github.com/knuckleswtf/scribe/pull/673))
+  - This fixes the problems with the recently introduced localization feature, by switching to a custom translation system. Users should delete the `en.json` file, if they had previously published it. See [the docs](https://scribe.knuckles.wtf/laravel/advanced/localization) for details.
+
+
+# 4.20.0 (28 May 2023)
+## Modified
+- Support Laravel 10's optional `rules()` in Form Requests ([#664](https://github.com/knuckleswtf/scribe/pull/664))
+- Allow `@apiResource` without `@apiResourceModel` ([#662](https://github.com/knuckleswtf/scribe/pull/662))
+
+## Fixed
+- Don't autoload in `class_exists()` check ([#659](https://github.com/knuckleswtf/scribe/pull/659))
+- Don't override description in enum rules ([#667](https://github.com/knuckleswtf/scribe/pull/667))
+
+# 4.19.1 (5 May 2023)
+## Fixed
+- Fix translations when locale is not EN and no strings are defined ([8d2be2c6](https://github.com/knuckleswtf/scribe/commit/8d2be2c681f71ed31c6be5043d6b1a0761f0235e))
+
+# 4.19.0 (22 April 2023)
+## Added
+- Internationalization / Localization - You can now translate text in the Scribe-generated docs UI into your language, or just change the warning. To see the available strings to customise, run `php artisan vendor:publish --tag=scribe-translations`. [#647](https://github.com/knuckleswtf/scribe/pull/647)
+
+## Fixed
+- (In the default theme) Menu items now open when you scroll down. [#644](https://github.com/knuckleswtf/scribe/pull/644)
+
+# 4.18.0 (8 April 2023)
+## Fixed
+- Upgrader: Ignore `examples.models_source` ([#636](https://github.com/knuckleswtf/scribe/pull/636))
+- OpenAPI spec: Don't include forbidden headers (fixes #625) ([56d589a48](https://github.com/knuckleswtf/scribe/commit/56d589a484263119bebbb4ca1a26f60fa10ea87f))
+- Correctly support No-example in inline validators  (fixes #637) ([5fbe5fcab](https://github.com/knuckleswtf/scribe/commit/5fbe5fcab009139809c8a3e316ca753b23eb18ce))
+- FormRequest: Don't emit warning message if subfields are present in extra data (fixes #643) ([112bba0ec](https://github.com/knuckleswtf/scribe/commit/112bba0ec883b59c4879682670823bc7c7a5ca63))
+
+## Modified
+- Remove`auth description randomisation ([#639](https://github.com/knuckleswtf/scribe/pull/639))
+
+# 4.17.0 (19 March 2023)
+## Added
+- Proper support for invokable rules and Laravel 10 validation rules changes ([ea3418](https://github.com/knuckleswtf/scribe/commit/ea341869b4062c9303507cae06fe1da1e12d7ccc))
+
+## Modified
+- Experimental: don't URL-encode Postman query parameters (closes #442) ([df4d86fa1](https://github.com/knuckleswtf/scribe/commit/df4d86fa1df06e9d2a2a294d39ee258ac94f02de))
+- Replace ":attribute" at the start of validation messages (closes #633) ([ea122486d](https://github.com/knuckleswtf/scribe/commit/ea122486daa4168e612a5c40f8d385bb38fb8ae7))
+
+# 4.16.1 (19 March 2023)
+## Fixed
+- Fix sorting of responses by status code ([#623](https://github.com/knuckleswtf/scribe/pull/623))
+- Skip upgrade check if user hasn't published config yet ([#628](https://github.com/knuckleswtf/scribe/pull/628))
+- Upgrader: Ignore `examples.models_source` ([#631](https://github.com/knuckleswtf/scribe/pull/631))
+- More robust replacement of `:attribute` in validation rule descriptions (closes #633)
+- Remove invalid JS file request (closes #634)
+
+# 4.16.0 (16 February 2023)
+## Added
+- Support for Laravel enum validation rule in inline validators ([#616](https://github.com/knuckleswtf/scribe/pull/616))
+
+
+# 4.15.0 (14 February 2023)
+## Added
+- Support for Laravel enum validation rule ([#614](https://github.com/knuckleswtf/scribe/pull/614))
+
+
 # 4.14.0 (07 February 2023)
 ## Added
 - Support for Laravel 10 ([#610](https://github.com/knuckleswtf/scribe/pull/610))

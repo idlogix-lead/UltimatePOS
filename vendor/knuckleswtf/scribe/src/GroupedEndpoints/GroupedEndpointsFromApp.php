@@ -2,6 +2,7 @@
 
 namespace Knuckles\Scribe\GroupedEndpoints;
 
+use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
@@ -9,6 +10,7 @@ use Knuckles\Camel\Camel;
 use Knuckles\Camel\Extraction\ExtractedEndpointData;
 use Knuckles\Camel\Output\OutputEndpointData;
 use Knuckles\Scribe\Commands\GenerateDocumentation;
+use Knuckles\Scribe\Exceptions\CouldntGetRouteDetails;
 use Knuckles\Scribe\Extracting\ApiDetails;
 use Knuckles\Scribe\Extracting\Extractor;
 use Knuckles\Scribe\Matching\MatchedRoute;
@@ -217,9 +219,12 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
         }
     }
 
-    private function isValidRoute(array $routeControllerAndMethod = null): bool
+    private function isValidRoute(?array $routeControllerAndMethod): bool
     {
         if (is_array($routeControllerAndMethod)) {
+            if (count($routeControllerAndMethod) < 2) {
+                throw CouldntGetRouteDetails::new();
+            }
             [$classOrObject, $method] = $routeControllerAndMethod;
             if (u::isInvokableObject($classOrObject)) {
                 return true;
@@ -232,6 +237,9 @@ class GroupedEndpointsFromApp implements GroupedEndpointsContract
 
     private function doesControllerMethodExist(array $routeControllerAndMethod): bool
     {
+        if (count($routeControllerAndMethod) < 2) {
+            throw CouldntGetRouteDetails::new();
+        }
         [$class, $method] = $routeControllerAndMethod;
         $reflection = new ReflectionClass($class);
 

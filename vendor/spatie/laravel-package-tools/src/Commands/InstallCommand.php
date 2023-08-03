@@ -15,6 +15,8 @@ class InstallCommand extends Command
 
     protected bool $shouldPublishConfigFile = false;
 
+    protected bool $shouldPublishAssets = false;
+
     protected bool $shouldPublishMigrations = false;
 
     protected bool $askToRunMigrations = false;
@@ -49,6 +51,14 @@ class InstallCommand extends Command
 
             $this->callSilently("vendor:publish", [
                 '--tag' => "{$this->package->shortName()}-config",
+            ]);
+        }
+        
+        if ($this->shouldPublishAssets) {
+            $this->comment('Publishing assets...');
+
+            $this->callSilently("vendor:publish", [
+                '--tag' => "{$this->package->shortName()}-assets",
             ]);
         }
 
@@ -100,6 +110,13 @@ class InstallCommand extends Command
     public function publishConfigFile(): self
     {
         $this->shouldPublishConfigFile = true;
+
+        return $this;
+    }
+    
+    public function publishAssets(): self
+    {
+        $this->shouldPublishAssets = true;
 
         return $this;
     }
@@ -167,8 +184,8 @@ class InstallCommand extends Command
         }
 
         file_put_contents(config_path('app.php'), str_replace(
-            "Illuminate\\View\ViewServiceProvider::class,",
-            "Illuminate\\View\ViewServiceProvider::class," . PHP_EOL . "        {$namespace}\Providers\\" . $providerName . "::class,",
+            "{$namespace}\\Providers\\BroadcastServiceProvider::class,",
+            "{$namespace}\\Providers\\BroadcastServiceProvider::class," . PHP_EOL . "        {$namespace}{$class},",
             $appConfig
         ));
 

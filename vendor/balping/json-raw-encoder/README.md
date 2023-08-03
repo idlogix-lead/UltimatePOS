@@ -58,7 +58,7 @@ To get around this problem, use `Raw` objects provided by this package:
 </script>
 ```
 
-Now, the encoded JSON looks like this. Notice, that there are no parentheses around the function.
+Now, the encoded JSON looks like this. Notice, that there are no quotation marks around the function.
 
 ```js
 {"type":"cat","count":42,"callback":function(a){alert(a);}}
