@@ -100,6 +100,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true,
+        "platform-check": false,
         "allow-plugins": {
             "ocramius/package-versions": true,
             "php-http/discovery": true
