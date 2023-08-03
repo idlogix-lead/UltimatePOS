@@ -1,2 +1,0 @@
-[2023-06-27 12:23:30] live.EMERGENCY: ERROR: NOT ALLOWED: Mismatch between sold and purchase quantity. Product: SLS Powder - 5 KG SKU: 3904 Quantity: 2 Business: TRS Location: 00-LTC Shop  
-[2023-06-27 12:23:31] live.EMERGENCY: File:C:\xampp\htdocs\pos\app\Utils\TransactionUtil.phpLine:3159Message:ERROR: NOT ALLOWED: Mismatch between sold and purchase quantity. Product: SLS Powder - 5 KG SKU: 3904 Quantity: 2  

@@ -1,4 +1,0 @@
-[2023-06-22 13:37:40] live.EMERGENCY: ERROR: NOT ALLOWED: Mismatch between sold and purchase quantity. Product: Eucalyptus Oil - 1 KG SKU: 3729 Quantity: 8 Business: TRS Location: 00-LTC Shop  
-[2023-06-22 13:37:40] live.EMERGENCY: File:C:\xampp\htdocs\pos\app\Utils\TransactionUtil.phpLine:3159Message:ERROR: NOT ALLOWED: Mismatch between sold and purchase quantity. Product: Eucalyptus Oil - 1 KG SKU: 3729 Quantity: 8  
-[2023-06-22 13:37:50] live.EMERGENCY: ERROR: NOT ALLOWED: Mismatch between sold and purchase quantity. Product: Eucalyptus Oil - 1 KG SKU: 3729 Quantity: 8 Business: TRS Location: 00-LTC Shop  
-[2023-06-22 13:37:50] live.EMERGENCY: File:C:\xampp\htdocs\pos\app\Utils\TransactionUtil.phpLine:3159Message:ERROR: NOT ALLOWED: Mismatch between sold and purchase quantity. Product: Eucalyptus Oil - 1 KG SKU: 3729 Quantity: 8  
