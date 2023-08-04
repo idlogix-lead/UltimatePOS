@@ -2934,12 +2934,13 @@ class TransactionUtil extends Util
 
         //Check tht type of report and return data accordingly
         if ($type == 'by_category') {
-            $expenses = $query->select(
+            $expenses = $query->leftJoin("expense_categories as ec2","transactions.expense_sub_category_id","ec2.id")->select(
                 DB::raw("SUM( IF(transactions.type='expense_refund', -1 * final_total, final_total) ) as total_expense"),
-                'ec.name as category'
+                'ec.name as category',
+                'ec2.name as sub_category'
             )
-                        ->groupBy('expense_category_id')
-                        ->get();
+            ->groupBy('expense_category_id')
+            ->get();
         } elseif ($type == 'total') {
             $expenses = $query->select(
                 DB::raw("SUM( IF(transactions.type='expense_refund', -1 * final_total, final_total) ) as total_expense")

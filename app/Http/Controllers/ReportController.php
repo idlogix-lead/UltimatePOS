@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Response;
 use App\Brands;
 use App\BusinessLocation;
 use App\CashRegister;
@@ -3001,7 +3002,6 @@ class ReportController extends Controller
                 WHERE tsl.parent_sell_line_id = transaction_sell_lines.id), IF(P.enable_stock=0,(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax,   
                 (TSPL.quantity - TSPL.qty_returned) * (transaction_sell_lines.unit_price_inc_tax - PL.purchase_price_inc_tax)) )) AS gross_profit')
             );
-
         if ($permitted_locations != 'all') {
             $query->whereIn('sale.location_id', $permitted_locations);
         }
@@ -3079,9 +3079,9 @@ class ReportController extends Controller
             ->addSelect('CU.name as customer', 'CU.supplier_business_name')
                 ->groupBy('sale.contact_id');
         }
-
         $datatable = Datatables::of($query);
 
+       
         if (in_array($by, ['invoice'])) {
             $datatable->editColumn('gross_profit', function ($row) {
                 $discount = $row->discount_amount;
@@ -3141,9 +3141,7 @@ class ReportController extends Controller
             });
             $raw_columns[] = 'invoice_no';
         }
-
-        return $datatable->rawColumns($raw_columns)
-                  ->make(true);
+        return $datatable->rawColumns($raw_columns)->make(true);
     }
 
     /**
@@ -3962,5 +3960,87 @@ class ReportController extends Controller
         $suppliers = Contact::suppliersDropdown($business_id);
 
         return view('report.gst_purchase_report')->with(compact('suppliers', 'taxes'));
+    }
+
+    // Custom Report by Haris
+    public function ProfitLossCustomReport(Request $request){
+        if (! auth()->user()->can('profit_loss_report.view')) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $business_id = $request->user()->business_id;
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        // for sales detail
+        if($request->ajax()){
+            $permitted_locations = auth()->user()->permitted_locations();
+            $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
+                
+                ->where('sale.type', 'sell')
+                ->where('sale.status', 'final')
+                ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
+                ->where('sale.business_id', $business_id)
+                ->where('transaction_sell_lines.children_type', '!=', 'combo');
+
+            $query->select(DB::raw("SUM(transaction_sell_lines.quantity * transaction_sell_lines.unit_price) AS total_sale"));
+            $query2 = $query;
+
+            $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
+                ->leftJoin('product_variations as PV', 'PV.id', '=', 'V.product_variation_id')
+                ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
+                ->groupBy('V.id');
+
+                if ($permitted_locations != 'all') {
+                    $query->whereIn('sale.location_id', $permitted_locations);
+                }
+                if (! empty($request->location_id)) {
+                    $query->where('sale.location_id', $request->location_id);
+                }
+                if (! empty($request->start_date) && ! empty($request->end_date)) {
+                    $start = $request->start_date;
+                    $end = $request->end_date;
+                    $query->whereDate('sale.transaction_date', '>=', $start)
+                                ->whereDate('sale.transaction_date', '<=', $end);
+                }
+
+            $datatable = Datatables::of($query);
+            $datatable->editColumn('total_sale', function ($row) {
+                return round($row->total_sale,2);
+            });
+           
+            $raw_columns = ['total_sale'];
+            return $datatable->rawColumns($raw_columns)->make(true);
+        }
+        return view('report.custom.profit_loss')->with("business_locations",$business_locations);
+    }
+    public function getSalesTotal(Request $request){
+        $business_id = $request->user()->business_id;
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        $permitted_locations = auth()->user()->permitted_locations();
+        // return $request->start_date; 
+        $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
+            ->where('sale.type', 'sell')
+            ->where('sale.status', 'final')
+            ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
+            ->where('sale.business_id', $business_id)
+            ->where('transaction_sell_lines.children_type', '!=', 'combo');
+
+        $query->select(DB::raw("SUM(transaction_sell_lines.quantity * transaction_sell_lines.unit_price) AS total_sale"));
+        $query2 = $query;
+            if ($permitted_locations != 'all') {
+                $query->whereIn('sale.location_id', $permitted_locations);
+            }
+            if (! empty($request->location_id)) {
+                $query->where('sale.location_id', $request->location_id);
+            }
+            if (! empty($request->start_date) && ! empty($request->end_date)) {
+                $start = $request->start_date;
+                $end = $request->end_date;
+                $query->whereDate('sale.transaction_date', '>=', $start)
+                            ->whereDate('sale.transaction_date', '<=', $end);
+            }
+
+        $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date];
+        $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters);
+        return Response::json([$query->first(),$expenses]);
     }
 }
