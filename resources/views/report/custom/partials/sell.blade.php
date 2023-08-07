@@ -8,7 +8,7 @@
            <tr>
                 {{-- <th>@lang('sale.product')</th> --}}
                 <th>Description</th>
-                <th>@lang('sale.total')</th>
+                <th>Amount</th>
             </tr>
         </thead>
         <tfoot>
