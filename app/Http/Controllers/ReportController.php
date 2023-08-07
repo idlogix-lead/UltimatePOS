@@ -4040,7 +4040,7 @@ class ReportController extends Controller
             }
 
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date];
-        $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters);
+        $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category");
         return Response::json([$query->first(),$expenses]);
     }
 }
