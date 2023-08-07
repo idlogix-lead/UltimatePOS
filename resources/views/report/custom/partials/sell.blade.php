@@ -1,10 +1,10 @@
 <div class="table-responsive cus_print">
-    <!-- <h2>Sales</h2> -->
+    <h2 class="table_heading">Revenue</h2> 
     <table class="table table-bordered table-striped" id="profit_by_products_table">
         <thead>
-            <tr>
+            {{-- <tr>
                 <th class="table_heading">Revenue</th>
-            </tr>
+            </tr> --}}
            <tr>
                 {{-- <th>@lang('sale.product')</th> --}}
                 <th>Description</th>

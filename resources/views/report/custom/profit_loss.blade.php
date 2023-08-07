@@ -14,6 +14,7 @@
             overflow-x: hidden;
             padding-top:0px;
             padding-bottom:0px;
+            margin:0px;
         }
         table.dataTable thead .sorting:after, table.dataTable thead .sorting_asc:after, table.dataTable thead .sorting_asc_disabled:after, table.dataTable thead .sorting_desc:after, table.dataTable thead .sorting_desc_disabled:after{
             display:none;
@@ -23,8 +24,12 @@
             border-color: #3c8dbc!important;
             color:white !important;
         }
-        .table .table_heading{
+        .table_heading{
             background-color:#000080 !important;
+            color:white !important;
+            width:30%;
+            margin-bottom:-20px;
+            padding:5px;
         }
         .dt-buttons{
             display:none;
@@ -63,6 +68,7 @@
             <h2>@lang( 'report.profit_loss' )</h2>
             <h3><label for=""></label>{{session()->get('business.name')}}</h3>
         </div>
+        <br>
         <table style="width:100%;">
             <tr>
                 <td><label for="">Location: </label><span class="bus_loc"></span></td>

@@ -1,11 +1,11 @@
 <div class="table-responsive cus_print">
-    <!-- <h2>Cost of Sales</h2> -->
+    <h2 class="table_heading">Cost of Sales</h2>
     <table class="table table-bordered table-striped " id="cost_table_custom">
         <thead>
-            <tr >
+            {{-- <tr >
                 <th   class="table_heading">Cost of Sales</th>
                 
-            </tr>
+            </tr> --}}
             <tr>
                 <th>Category</th>
                 <th>@lang('product.sub_category')</th>
@@ -26,7 +26,7 @@
 <div class="table-responsive cus_print">
     <table class="table table-bordered table-striped" id="custom_gross_profit_table">
         <tfoot>
-            <tr class="bg-gray profit font-17 footer-total">
+            <tr class="bg-gray profit font-14 footer-total">
                 <td><span>{{ __('lang_v1.gross_profit') }} (Sales Total - Cost of Sales Total):</span></td>
                 <td class="gross_profit currency"></td>
             </tr>
@@ -36,12 +36,12 @@
 </div>
 
 <div class="table-responsive cus_print">
-    <!-- <h2>Expenses</h2> -->
-    <table class="table table-bordered table-striped " id="expense_table_custom">
+    <h2 class="table_heading">Expenses</h2> 
+    <table class="table table-bordered table-striped mt-0" id="expense_table_custom">
         <thead>
-            <tr>
+            {{-- <tr>
                 <th  class="table_heading" >Expenses</th>
-            </tr>
+            </tr> --}}
             <tr>
                 <th>Category</th>
                 <th>@lang('product.sub_category')</th>
