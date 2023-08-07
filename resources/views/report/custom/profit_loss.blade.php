@@ -23,6 +23,9 @@
             border-color: #3c8dbc!important;
             color:white !important;
         }
+        .table .table_heading{
+            background-color:#000080 !important;
+        }
         .dt-buttons{
             display:none;
         }
@@ -44,6 +47,9 @@
             border-color: #004aff57 !important;
             /* color: white !important; */
         }
+    }
+    .table td{
+        width:30%;
     }
     .currency{
         text-align:right;

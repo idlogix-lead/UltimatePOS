@@ -3,10 +3,11 @@
     <table class="table table-bordered table-striped" id="profit_by_products_table">
         <thead>
             <tr>
-                <th colspan="2" class="table_heading">Revenue</th>
+                <th class="table_heading">Revenue</th>
             </tr>
            <tr>
-                <th>@lang('sale.product')</th>
+                {{-- <th>@lang('sale.product')</th> --}}
+                <th>Description</th>
                 <th>@lang('sale.total')</th>
             </tr>
         </thead>
