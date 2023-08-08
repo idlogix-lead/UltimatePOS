@@ -47,9 +47,9 @@
             font-weight: bold;
             /* color: white !important; */
         }
-        .table .profit td{
+        .table .profit td,.table .profit td {
             background-color: #004aff57 !important;
-            border-color: #004aff57 !important;
+            border-color:transparent !important;
             /* color: white !important; */
         }
     }
