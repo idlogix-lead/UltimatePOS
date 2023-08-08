@@ -59,6 +59,9 @@ use App\Http\Controllers\UnitController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\VariationTemplateController;
 use App\Http\Controllers\WarrantyController;
+
+use App\Http\Controllers\JasperController;
+
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -481,6 +484,10 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::put('update-sales-orders/{id}/status', [SalesOrderController::class, 'postEditSalesOrderStatus']);
     Route::get('reports/activity-log', [ReportController::class, 'activityLog']);
     Route::get('user-location/{latlng}', [HomeController::class, 'getUserLocation']);
+
+    //Jasper
+    Route::get('jasper/compile', [JasperController::class, 'compile']);
+    Route::get('jasper/report/{name}', [JasperController::class, 'report']);
 });
 
 // Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {
