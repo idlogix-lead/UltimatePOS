@@ -19,7 +19,13 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 // Artisan::command("jasper",App\Http\Controllers\JasperController::compile());
-Artisan::command("jasper",function(){
-    App\Http\Controllers\JasperController::UpdateReports();
+Artisan::command("jasper:build {file?}",function($file = ""){
+    $this->comment(App\Http\Controllers\JasperController::UpdateReports($file));
 });
+Artisan::command("jasper:test",function(){
+    $this->comment(App\Http\Controllers\JasperController::console());
+});
+// Artisan::command("para {data?}",function($data=""){
+//     $this->comment($data);
+// });
 

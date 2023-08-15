@@ -18,10 +18,23 @@ class JasperController extends Controller
         }
         return $files;
     }
-    static function UpdateReports(){
-        $reports = JasperController::read_files(storage_path('app\report\source\MyReports\src'));
-        foreach($reports as $key=>$report){
-            JasperController::compile($report);
+    static function UpdateReports($file = ""){
+        if($file != ""){
+            $path = storage_path('app\report\source\MyReports\src');
+            $file .= ".jrxml";
+            $file = $path."\\".$file;
+            if (file_exists($file)) {
+                JasperController::compile($file);
+                return "Build Successfully!";
+            }else{
+                return "Sorry! no Report file Found in ". $path;
+            }
+        }else{
+            $reports = JasperController::read_files($path);
+            foreach($reports as $key=>$report){
+                JasperController::compile($report);
+            }
+            return "All Reports Build Successfully!";
         }
     }
     static function compile($input){
@@ -41,19 +54,31 @@ class JasperController extends Controller
             'Content-Disposition' => 'inline; filename="'.$filename.'"'
         ]);
     }
-    static function jasper($input,$output,$options,$template){
+    static function html($path,$filename){
+        $content = file_get_contents($path);
+        return view("report.jasper.preview")->with('preview',$content);
+    }
+    static function jasper($input,$output,$options,$template,$ext){
         $jasper = new PHPJasper;
         $resp = $jasper->process(
             $input,
             $output,
             $options
         )->execute();
-        $pdf = $template.'.pdf';
+        $filename = $template.'.'.$ext;
         if($resp == []){
-            return JasperController::pdf($output.'\\'.$pdf,$pdf);
+            switch ($ext){
+                case "pdf":
+                    return JasperController::pdf($output.'\\'.$filename,$filename);
+                    break;
+                case "html":
+                    return JasperController::html($output.'\\'.$filename,$filename);
+                    break;
+
+            }
         }
     }
-    public function report($report){
+    public static function report($report,$ext = "pdf"){
         // $report = $report;
         $src = storage_path('app\report\source\MyReports\src');
         $reports = JasperController::read_files($src);
@@ -71,22 +96,71 @@ class JasperController extends Controller
         $input = storage_path('app\report\compiled').'\\'.$report.'.jasper';  
         $output = JasperController::dir_check(storage_path('app\report\output')."\business_".$business_id."\user_".$user_id);  
         $options = [
-            "format" => ["pdf"],
+            'locale' => 'en',
+            'db_connection' => [
+                'driver' => env('DB_CONNECTION'),
+                'username' => env('DB_USERNAME'),
+                'host' => env('DB_HOST'),
+                'database' => env('DB_DATABASE'),
+                'port' => env('DB_PORT')
+            ]
         ];
+        if(env('DB_PASSWORD') != null ||  env('DB_PASSWORD') != ""){
+            $options["db_connection"]["password"] = env('DB_PASSWORD');
+        }
+        // dd($options);
         switch($report){
             case "expense":{
-                return JasperController::hello_world($input,$output,$options,$report,$user);
+                return JasperController::expense($input,$output,$options,$report,$ext,$user);
             }break;
             case "hello_world":{
-                return JasperController::hello_world($input,$output,$options,$report,$user);
+                return JasperController::hello_world($input,$output,$options,$report,$ext,$user);
             }break;
         }
         
     }
     //reports -----------------------------------------------------------
-    static function hello_world($input,$output,$options,$template,$user){
+    static function hello_world($input,$output,$options,$template,$ext,$user){
         // $options["format"] =[ "pdf"];
-        return JasperController::jasper($input,$output,$options,$template);
+        // $ext = "pdf";
+        return JasperController::jasper($input,$output,$options,$template,$ext);
+    }
+    static function expense($input,$output,$options,$template,$ext,$user){
+        $start_date = isset($_GET["start_date"])?$_GET["start_date"]:date('Y-m-d');
+        $end_date = isset($_GET["end_date"])?$_GET["end_date"]:date("Y-m-d");
+        // $ext = "html";
+        $options["params"] =[ 
+            "business_id" => $user->business_id,
+            "start_date" => $start_date,
+            "end_date" => $end_date,
+        ];
+        $options["format"] = [$ext];
+        // dd($options);
+        return JasperController::jasper($input,$output,$options,$template,$ext);
+    }
+    //for report testing console
+    static function console(){
+        $in = "E:\\xampp8.2\htdocs\UltimatePOS\storage\app\\report\compiled\\expense.jasper";
+        $out = "E:\\xampp8.2\htdocs\UltimatePOS\storage\app\\report\output\business_1\user_1";
+        $op = [
+            "format" => ["pdf"],
+            'locale' => 'en',
+            'params' => ["business_id" => 1],
+            'db_connection' => [
+                'driver' => env('DB_CONNECTION'),
+                'username' => env('DB_USERNAME'),
+                'host' => env('DB_HOST'),
+                'database' => env('DB_DATABASE'),
+                'port' => env('DB_PORT')
+            ]
+        ];
+        $tp = "expense";
+        $jasper = new PHPJasper;
+        return Response::json($jasper->process(
+            $in,
+            $out,
+            $op
+        )->execute());
     }
 }
 

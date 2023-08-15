@@ -487,7 +487,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
 
     //Jasper
     Route::get('jasper/compile', [JasperController::class, 'compile']);
-    Route::get('jasper/report/{name}', [JasperController::class, 'report']);
+    Route::get('jasper/report/{name}/{ext?}', [JasperController::class, 'report']);
 });
 
 // Route::middleware(['EcomApi'])->prefix('api/ecom')->group(function () {

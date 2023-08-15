@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><jdbcDataAdapter class="net.sf.jasperreports.data.jdbc.JdbcDataAdapterImpl">
+  <name>Mysql</name>
+  <classpath>C:\Program Files (x86)\MySQL\MySQL Connector J\mysql-connector-java-5.1.25-bin.jar</classpath>
+  <driver>com.mysql.jdbc.Driver</driver>
+  <username>root</username>
+  <password/>
+  <url>jdbc:mysql://localhost/upos</url>
+  <database/>
+  <savePassword>true</savePassword>
+  <serverAddress/>
+</jdbcDataAdapter>
