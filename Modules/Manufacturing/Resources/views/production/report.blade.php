@@ -80,20 +80,20 @@
     <br>
     <div class="row no-print">
         <div class="col-md-3">
-            <a href="{{action('ReportController@getStockReport')}}?only_mfg=true" class="btn btn-info btn-flat btn-block">@lang('report.stock_report')</a>
+            <a href="{{action([\App\Http\Controllers\ReportController::class, 'getStockReport'])}}?only_mfg=true" class="btn btn-info btn-flat btn-block">@lang('report.stock_report')</a>
         </div>
         @if(session('business.enable_lot_number') == 1)
         <div class="col-md-3">
-            <a href="{{action('ReportController@getLotReport')}}?only_mfg=true" class="btn btn-success btn-flat btn-block">@lang('lang_v1.lot_report')</a>
+            <a href="{{action([\App\Http\Controllers\ReportController::class, 'getLotReport'])}}?only_mfg=true" class="btn btn-success btn-flat btn-block">@lang('lang_v1.lot_report')</a>
         </div>
         @endif
         @if(session('business.enable_product_expiry') == 1)
         <div class="col-md-3">
-            <a href="{{action('ReportController@getStockExpiryReport')}}?only_mfg=true" class="btn btn-warning btn-flat btn-block">@lang('report.stock_expiry_report')</a>
+            <a href="{{action([\App\Http\Controllers\ReportController::class, 'getStockExpiryReport'])}}?only_mfg=true" class="btn btn-warning btn-flat btn-block">@lang('report.stock_expiry_report')</a>
         </div>
         @endif
         <div class="col-md-3">
-            <a href="{{action('ReportController@itemsReport')}}?only_mfg=true" class="btn btn-danger btn-flat btn-block">@lang('lang_v1.items_report')</a>
+            <a href="{{action([\App\Http\Controllers\ReportController::class, 'itemsReport'])}}?only_mfg=true" class="btn btn-danger btn-flat btn-block">@lang('lang_v1.items_report')</a>
         </div>
     </div>
     <br>
