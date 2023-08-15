@@ -79,7 +79,6 @@ class JasperController extends Controller
         }
     }
     public static function report($report,$ext = "pdf"){
-        // $report = $report;
         $src = storage_path('app\report\source\MyReports\src');
         $reports = JasperController::read_files($src);
 
@@ -126,18 +125,21 @@ class JasperController extends Controller
         return JasperController::jasper($input,$output,$options,$template,$ext);
     }
     static function expense($input,$output,$options,$template,$ext,$user){
-        $start_date = isset($_GET["start_date"])?$_GET["start_date"]:date('Y-m-d');
-        $end_date = isset($_GET["end_date"])?$_GET["end_date"]:date("Y-m-d");
-        // $ext = "html";
+        $daterange = [
+            "start_date" => isset($_GET["start_date"])?$_GET["start_date"]:date('Y-m-d'),
+            "end_date" => isset($_GET["end_date"])?$_GET["end_date"]:date("Y-m-d")
+        ];
         $options["params"] =[ 
             "business_id" => $user->business_id,
-            "start_date" => $start_date,
-            "end_date" => $end_date,
+            "start_date" => $daterange["start_date"],
+            "end_date" => $daterange["end_date"]
         ];
         $options["format"] = [$ext];
         // dd($options);
         return JasperController::jasper($input,$output,$options,$template,$ext);
     }
+
+    
     //for report testing console
     static function console(){
         $in = "E:\\xampp8.2\htdocs\UltimatePOS\storage\app\\report\compiled\\expense.jasper";
