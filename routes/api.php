@@ -23,6 +23,7 @@ Route::middleware('auth:api')->group(function(){
         return $request->user()->business_id;
     });
     Route::post("/report/profitloss/{by?}", [ApiController::class,"ProfitLossReportBy"]);
+    Route::post("/report/profitlosscustom1", [ApiController::class,"ProfitLossReportCustom1"]);
     Route::post("/report/businessprofitloss", [ApiController::class,"BusinessProfitLoss"]);
     Route::post("/report/getLocations",[ApiController::class, "GetLocations"]);
     Route::post("/report/salepurchase",[ApiController::class, "SalePurchase"]);

@@ -11,10 +11,26 @@
                 <th>Amount</th>
             </tr>
         </thead>
+        @if(isset($revenue))
+            @php
+                global $total_revenue;
+            @endphp
+            <tbody>
+                @foreach ($revenue as $item)
+                    <tr>
+                        <td>{{$item["product"]}}</td>
+                        <td>{{isset($symbol)?$symbol:""}}. {{round($item["gross_profit"],2)}}</td>
+                    </tr>
+                    @php
+                        $total_revenue += $item["gross_profit"];
+                    @endphp
+                @endforeach
+            </tbody>
+        @endif
         <tfoot>
             <tr class="bg-gray font-17 footer-total">
                 <td><strong>@lang('sale.total'):</strong></td>
-                <td class="sell_total"></td>
+                <td class="sell_total">{{isset($symbol)?$symbol.". ".round($total_revenue,2):""}}</td>
             </tr>
         </tfoot>
     </table>

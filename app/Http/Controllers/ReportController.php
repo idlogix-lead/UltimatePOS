@@ -3967,6 +3967,39 @@ class ReportController extends Controller
         return $query;
     }
     // Custom Report by Haris
+    static function getRevenueCustom(Request $request){
+        $business_id = $request->user()->business_id;
+        $permitted_locations = $request->user()->permitted_locations();
+        // $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
+        //     ->where('sale.type', 'sell')
+        //     ->where('sale.status', 'final')
+        //     ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
+        //     ->leftJoin('purchase_lines as PL', 'P.id', '=', 'PL.product_id')
+        //     ->where('sale.business_id', $business_id)
+        //     ->where('transaction_sell_lines.children_type', '!=', 'combo')
+        //     ->groupBy("PL.product_id");
+
+        // $query->select([DB::raw("MAX(PL.id)"),DB::raw("SUM(transaction_sell_lines.quantity * (transaction_sell_lines.unit_price - PL.purchase_price_inc_tax) )  AS total_sale")]);
+        $query = ReportController::getGrossProfit($business_id);
+        $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
+            ->leftJoin('product_variations as PV', 'PV.id', '=', 'V.product_variation_id')
+            ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
+            ->groupBy('V.id');
+
+            if ($permitted_locations != 'all') {
+                $query->whereIn('sale.location_id', $permitted_locations);
+            }
+            if (! empty($request->location_id)) {
+                $query->where('sale.location_id', $request->location_id);
+            }
+            if (! empty($request->start_date) && ! empty($request->end_date)) {
+                $start = $request->start_date;
+                $end = $request->end_date;
+                $query->whereDate('sale.transaction_date', '>=', $start)
+                            ->whereDate('sale.transaction_date', '<=', $end);
+            }
+            return $query;
+    }
     public function ProfitLossCustomReport(Request $request){
         if (! auth()->user()->can('profit_loss_report.view')) {
             abort(403, 'Unauthorized action.');
@@ -3976,36 +4009,8 @@ class ReportController extends Controller
         $business_locations = BusinessLocation::forDropdown($business_id, true);
         // for sales detail
         if($request->ajax()){
-            $permitted_locations = auth()->user()->permitted_locations();
-            // $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
-            //     ->where('sale.type', 'sell')
-            //     ->where('sale.status', 'final')
-            //     ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
-            //     ->leftJoin('purchase_lines as PL', 'P.id', '=', 'PL.product_id')
-            //     ->where('sale.business_id', $business_id)
-            //     ->where('transaction_sell_lines.children_type', '!=', 'combo')
-            //     ->groupBy("PL.product_id");
-
-            // $query->select([DB::raw("MAX(PL.id)"),DB::raw("SUM(transaction_sell_lines.quantity * (transaction_sell_lines.unit_price - PL.purchase_price_inc_tax) )  AS total_sale")]);
-            $query = ReportController::getGrossProfit($business_id);
-            $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
-                ->leftJoin('product_variations as PV', 'PV.id', '=', 'V.product_variation_id')
-                ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
-                ->groupBy('V.id');
-
-                if ($permitted_locations != 'all') {
-                    $query->whereIn('sale.location_id', $permitted_locations);
-                }
-                if (! empty($request->location_id)) {
-                    $query->where('sale.location_id', $request->location_id);
-                }
-                if (! empty($request->start_date) && ! empty($request->end_date)) {
-                    $start = $request->start_date;
-                    $end = $request->end_date;
-                    $query->whereDate('sale.transaction_date', '>=', $start)
-                                ->whereDate('sale.transaction_date', '<=', $end);
-                }
-
+            
+            $query = ReportController::getRevenueCustom($request);
             $datatable = Datatables::of($query);
             $datatable->editColumn('total_sale', function ($row) {
                 return round($row->gross_profit,2);

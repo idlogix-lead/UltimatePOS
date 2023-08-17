@@ -156,8 +156,8 @@
                     total_expense += parseFloat(value.total_expense);
                 }
             });
-            
-            
+
+
             $('#expense_table_custom').dataTable().fnDestroy();
             $('#profit_by_products_table').dataTable().fnDestroy();
             $('#cost_table_custom').dataTable().fnDestroy();
@@ -205,31 +205,31 @@
                     { data: 'total_sale', "searchable": false, className: "currency", render: $.fn.dataTable.render.number( ',', '.', 2, '{{auth()->user()->business->currency->symbol}} ')},
                 ],
                 footerCallback: function ( row, data, start, end, display ) {
-                    var val = 0;
-                    // console.log(data);
+                    var val = null;
                     for (var r in data){
                         // console.log($(data[r].total_sale)[0]);
                         val += $(data[r].total_sale)[0] ? 
                         parseFloat($(data[r].total_sale)[0]) : 0;
                     }
-
+                    console.log("here");
                     $('.sell_total').html(__currency_trans_from_en(val));
-                    let total = (Math.round(val* 100.00)/100.00);
-                    let gross_profit = parseFloat(total) - total_cost;
-                    let net_profit = parseFloat(gross_profit - total_expense);
-                    //Removing Production cost and total discount for Manufacturing
-                    net_profit=net_profit-production_cost-total_discount;
-                    $('.discount_total').html(__currency_trans_from_en(total_discount));
-                    $('.expense_total').html(__currency_trans_from_en(total_expense));
-                    $('.cost_total').html(__currency_trans_from_en(total_cost));
-                    $('.gross_profit').html(__currency_trans_from_en(gross_profit));
-                    $('.net_total').html(__currency_trans_from_en(net_profit));
+                    if(val != null){
+                        let total = (Math.round(val* 100.00)/100.00);
+                        let gross_profit = parseFloat(total) - total_cost;
+                        let net_profit = parseFloat(gross_profit - total_expense);
+                        //Removing Production cost and total discount for Manufacturing
+                        net_profit=net_profit-production_cost-total_discount;
+                        $('.discount_total').html(__currency_trans_from_en(total_discount));
+                        $('.expense_total').html(__currency_trans_from_en(total_expense));
+                        $('.cost_total').html(__currency_trans_from_en(total_cost));
+                        $('.gross_profit').html(__currency_trans_from_en(gross_profit));
+                        $('.net_total').html(__currency_trans_from_en(net_profit));
+                    }
                 }
             });
-            
         });
 
-     }
+    }
     
 
     $(document).ready( function() {

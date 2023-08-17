@@ -120,6 +120,39 @@ class ApiController extends Controller
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($profit,$request),"ProfitLossReport",$request->user()->business->date_format);
         
     }
+    public function ProfitLossReportCustom1(Request $request){
+        if (! $request->user()->can('profit_loss_report.view')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        if(!isset($request->location_id)){
+            // $request->location_id = ;
+        }
+        $location_id = $request->location_id;
+        $business_id = $request->user()->business_id;
+        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        $query = ReportController::getRevenueCustom($request);
+        $revenue = $query->get() !== null?$query->get()->toArray():[];
+        $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
+        $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category")->toArray();
+        $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $request->start_date, $request->end_date);
+        
+        $discount_total = (floatVal($data["total_sell_discount"]));
+        $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
+
+        // dd($expenses);
+        // $data = [];
+        $view = view('report.custom.api.profit_loss')
+        ->with("discount_total",$discount_total)
+        ->with("production_cost",$production_cost)
+        ->with("expenses",$expenses)
+        ->with('symbol',$request->user()->business->currency->symbol)
+        ->with("business_locations",$business_locations)
+        ->with("revenue",$revenue)->render();
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format);
+
+    }
     //get locations with permited locations
     public static function GetLocations(Request $request,$id = null){
         if($id !== null){
@@ -182,9 +215,12 @@ class ApiController extends Controller
             "start_date" => $request->get("start_date")?$request->get("start_date"):"",
             "end_date" => $request->get("end_date")?$request->get("end_date"):"",
             "user" => $request->user()->getUserFullNameAttribute(),
-            "location" => (ApiController::GetLocations($request,$request->get("location_id"))),
+            "location" => !empty($request->location_id)?(ApiController::GetLocations($request,$request->location_id)):["name"=>"All Locations ","location_id"=>" - "],
             "date_format" => $request->user()->business->date_format
         ];
         return view("report.partials.api.header")->with("data",$data).$view.view("report.partials.api.footer")->with("data",$request->user()->business->date_format);
+    }
+    static function headerFooterData(Request $request){
+        
     }
 }

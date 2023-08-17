@@ -4420,11 +4420,13 @@ class TransactionUtil extends Util
         }
 
         //Filter by the location
+
         if (! empty($location_id)) {
-            //if payroll check employees's work location
-            if (in_array('payroll', $transaction_types)) {
-                $query->leftjoin('users as u', 'u.id', '=', 'transactions.expense_for')
-                    ->where('u.location_id', $location_id);
+        // dd(in_array('payroll', $transaction_types)); haris
+        //if payroll check employees's work location
+            if (in_array('payroll', $transaction_types) == true) {
+                // $query->leftjoin('users as u', 'u.id', '=', 'transactions.expense_for')
+                //     ->where('u.location_id', $location_id);
             } else {
                 $query->where('transactions.location_id', $location_id);
             }
