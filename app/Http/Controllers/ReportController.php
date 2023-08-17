@@ -2978,30 +2978,8 @@ class ReportController extends Controller
         $api == [] ? $business_id = request()->session()->get('user.business_id'):$business_id = $request->user()->business_id;
         $api == [] ? $permitted_locations = auth()->user()->permitted_locations():$permitted_locations = $request->user()->permitted_locations();
 
-        $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
-            ->leftjoin('transaction_sell_lines_purchase_lines as TSPL', 'transaction_sell_lines.id', '=', 'TSPL.sell_line_id')
-            ->leftjoin(
-                'purchase_lines as PL',
-                'TSPL.purchase_line_id',
-                '=',
-                'PL.id'
-            )
-            ->where('sale.type', 'sell')
-            ->where('sale.status', 'final')
-            ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
-            ->where('sale.business_id', $business_id)
-            ->where('transaction_sell_lines.children_type', '!=', 'combo');
-        //If type combo: find childrens, sale price parent - get PP of childrens
-        $query->select(DB::raw('SUM(IF (TSPL.id IS NULL AND P.type="combo", ( 
-            SELECT Sum((tspl2.quantity - tspl2.qty_returned) * (tsl.unit_price_inc_tax - pl2.purchase_price_inc_tax)) AS total
-                FROM transaction_sell_lines AS tsl
-                    JOIN transaction_sell_lines_purchase_lines AS tspl2
-                ON tsl.id=tspl2.sell_line_id 
-                JOIN purchase_lines AS pl2 
-                ON tspl2.purchase_line_id = pl2.id 
-                WHERE tsl.parent_sell_line_id = transaction_sell_lines.id), IF(P.enable_stock=0,(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax,   
-                (TSPL.quantity - TSPL.qty_returned) * (transaction_sell_lines.unit_price_inc_tax - PL.purchase_price_inc_tax)) )) AS gross_profit')
-            );
+        $query = ReportController::getGrossProfit($business_id);
+
         if ($permitted_locations != 'all') {
             $query->whereIn('sale.location_id', $permitted_locations);
         }
@@ -3961,7 +3939,33 @@ class ReportController extends Controller
 
         return view('report.gst_purchase_report')->with(compact('suppliers', 'taxes'));
     }
-
+    static function getGrossProfit($business_id){
+        $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
+            ->leftjoin('transaction_sell_lines_purchase_lines as TSPL', 'transaction_sell_lines.id', '=', 'TSPL.sell_line_id')
+            ->leftjoin(
+                'purchase_lines as PL',
+                'TSPL.purchase_line_id',
+                '=',
+                'PL.id'
+            )
+            ->where('sale.type', 'sell')
+            ->where('sale.status', 'final')
+            ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
+            ->where('sale.business_id', $business_id)
+            ->where('transaction_sell_lines.children_type', '!=', 'combo');
+        //If type combo: find childrens, sale price parent - get PP of childrens
+        $query->select(DB::raw('SUM(IF (TSPL.id IS NULL AND P.type="combo", ( 
+            SELECT Sum((tspl2.quantity - tspl2.qty_returned) * (tsl.unit_price_inc_tax - pl2.purchase_price_inc_tax)) AS total
+                FROM transaction_sell_lines AS tsl
+                    JOIN transaction_sell_lines_purchase_lines AS tspl2
+                ON tsl.id=tspl2.sell_line_id 
+                JOIN purchase_lines AS pl2 
+                ON tspl2.purchase_line_id = pl2.id 
+                WHERE tsl.parent_sell_line_id = transaction_sell_lines.id), IF(P.enable_stock=0,(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax,   
+                (TSPL.quantity - TSPL.qty_returned) * (transaction_sell_lines.unit_price_inc_tax - PL.purchase_price_inc_tax)) )) AS gross_profit')
+        );
+        return $query;
+    }
     // Custom Report by Haris
     public function ProfitLossCustomReport(Request $request){
         if (! auth()->user()->can('profit_loss_report.view')) {
@@ -3973,17 +3977,17 @@ class ReportController extends Controller
         // for sales detail
         if($request->ajax()){
             $permitted_locations = auth()->user()->permitted_locations();
-            $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
-                
-                ->where('sale.type', 'sell')
-                ->where('sale.status', 'final')
-                ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
-                ->where('sale.business_id', $business_id)
-                ->where('transaction_sell_lines.children_type', '!=', 'combo');
+            // $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
+            //     ->where('sale.type', 'sell')
+            //     ->where('sale.status', 'final')
+            //     ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
+            //     ->leftJoin('purchase_lines as PL', 'P.id', '=', 'PL.product_id')
+            //     ->where('sale.business_id', $business_id)
+            //     ->where('transaction_sell_lines.children_type', '!=', 'combo')
+            //     ->groupBy("PL.product_id");
 
-            $query->select(DB::raw("SUM(transaction_sell_lines.quantity * transaction_sell_lines.unit_price) AS total_sale"));
-            $query2 = $query;
-
+            // $query->select([DB::raw("MAX(PL.id)"),DB::raw("SUM(transaction_sell_lines.quantity * (transaction_sell_lines.unit_price - PL.purchase_price_inc_tax) )  AS total_sale")]);
+            $query = ReportController::getGrossProfit($business_id);
             $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
                 ->leftJoin('product_variations as PV', 'PV.id', '=', 'V.product_variation_id')
                 ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
@@ -4004,7 +4008,7 @@ class ReportController extends Controller
 
             $datatable = Datatables::of($query);
             $datatable->editColumn('total_sale', function ($row) {
-                return round($row->total_sale,2);
+                return round($row->gross_profit,2);
             });
            
             $raw_columns = ['total_sale'];
@@ -4012,35 +4016,18 @@ class ReportController extends Controller
         }
         return view('report.custom.profit_loss')->with("business_locations",$business_locations);
     }
-    public function getSalesTotal(Request $request){
+    public function getExpensesCustom(Request $request){
         $business_id = $request->user()->business_id;
-        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        // $business_locations = BusinessLocation::forDropdown($business_id, true);
         $permitted_locations = auth()->user()->permitted_locations();
-        // return $request->start_date; 
-        $query = TransactionSellLine::join('transactions as sale', 'transaction_sell_lines.transaction_id', '=', 'sale.id')
-            ->where('sale.type', 'sell')
-            ->where('sale.status', 'final')
-            ->join('products as P', 'transaction_sell_lines.product_id', '=', 'P.id')
-            ->where('sale.business_id', $business_id)
-            ->where('transaction_sell_lines.children_type', '!=', 'combo');
-
-        $query->select(DB::raw("SUM(transaction_sell_lines.quantity * transaction_sell_lines.unit_price) AS total_sale"));
-        $query2 = $query;
-            if ($permitted_locations != 'all') {
-                $query->whereIn('sale.location_id', $permitted_locations);
-            }
-            if (! empty($request->location_id)) {
-                $query->where('sale.location_id', $request->location_id);
-            }
-            if (! empty($request->start_date) && ! empty($request->end_date)) {
-                $start = $request->start_date;
-                $end = $request->end_date;
-                $query->whereDate('sale.transaction_date', '>=', $start)
-                            ->whereDate('sale.transaction_date', '<=', $end);
-            }
+        $location_id = $request->location_id;
+        $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $request->start_date, $request->end_date);
+        
+        $discount_total = (floatVal($data["total_sell_discount"]));
+        $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
 
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date];
         $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category");
-        return Response::json([$query->first(),$expenses]);
+        return Response::json([$expenses,$production_cost,$discount_total]);
     }
 }

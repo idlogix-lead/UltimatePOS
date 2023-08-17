@@ -299,7 +299,7 @@ Route::middleware(['setData', 'auth', 'SetSessionData', 'language', 'timezone', 
     Route::get('/reports/get-stock-value', [ReportController::class, 'getStockValue']);
     // Custom Reports By Haris
     Route::get('/reports/custom/profitloss', [ReportController::class, 'ProfitLossCustomReport'])->name('profitloss.custom');
-    Route::post('/reports/custom/gettotalsales', [ReportController::class, 'getSalesTotal'])->name('getsalestotal.custom');
+    Route::post('/reports/custom/getExpensesCustom', [ReportController::class, 'getExpensesCustom'])->name('getExpenses.custom');
     
     
     Route::get('business-location/activate-deactivate/{location_id}', [BusinessLocationController::class, 'activateDeactivateLocation']);

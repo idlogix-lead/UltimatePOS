@@ -142,11 +142,12 @@
         $('.bus_loc').text(" "+loc);
         $('.date_range_disp').text(date_range);
 
-        $.post("{{route('getsalestotal.custom')}}",req,function(data){
+        $.post("{{route('getExpenses.custom')}}",req,function(data){
             let expenses = [], cost = [],e = 0, c = 0;
             var total_expense = 0, total_cost = 0;
-
-            $.each(data[1],function(key,value){
+            let production_cost = data[1];
+            let total_discount = data[2];
+            $.each(data[0],function(key,value){
                 if(value.category == exclude){
                     cost[c++] = value;
                     total_cost += parseFloat(value.total_expense);
@@ -156,9 +157,6 @@
                 }
             });
             
-            let total = (Math.round(data[0].total_sale* 100.00)/100.00);
-            let gross_profit = parseFloat(total) - total_cost;
-            let net_profit = gross_profit - total_expense;
             
             $('#expense_table_custom').dataTable().fnDestroy();
             $('#profit_by_products_table').dataTable().fnDestroy();
@@ -184,6 +182,7 @@
                     { data: 'total_expense', className: "currency", render: $.fn.dataTable.render.number( ',', '.', 2, '{{auth()->user()->business->currency->symbol}} ')},
                 ]
             });
+
             profit_by_products_table = $('#profit_by_products_table').DataTable({
                 paging:false,
                 searching: false,
@@ -213,14 +212,21 @@
                         val += $(data[r].total_sale)[0] ? 
                         parseFloat($(data[r].total_sale)[0]) : 0;
                     }
+
                     $('.sell_total').html(__currency_trans_from_en(val));
+                    let total = (Math.round(val* 100.00)/100.00);
+                    let gross_profit = parseFloat(total) - total_cost;
+                    let net_profit = parseFloat(gross_profit - total_expense);
+                    //Removing Production cost and total discount for Manufacturing
+                    net_profit=net_profit-production_cost-total_discount;
+                    $('.discount_total').html(__currency_trans_from_en(total_discount));
+                    $('.expense_total').html(__currency_trans_from_en(total_expense));
+                    $('.cost_total').html(__currency_trans_from_en(total_cost));
+                    $('.gross_profit').html(__currency_trans_from_en(gross_profit));
+                    $('.net_total').html(__currency_trans_from_en(net_profit));
                 }
             });
-
-            $('.expense_total').html(__currency_trans_from_en(total_expense));
-            $('.cost_total').html(__currency_trans_from_en(total_cost));
-            $('.gross_profit').html(__currency_trans_from_en(gross_profit));
-            $('.net_total').html(__currency_trans_from_en(net_profit));
+            
         });
 
      }
