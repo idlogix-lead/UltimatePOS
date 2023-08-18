@@ -126,9 +126,6 @@ class ApiController extends Controller
                 "message" => "Unauthorized action."
             ],403);
         }
-        if(!isset($request->location_id)){
-            // $request->location_id = ;
-        }
         $location_id = $request->location_id;
         $business_id = $request->user()->business_id;
         $business_locations = BusinessLocation::forDropdown($business_id, true);
@@ -141,8 +138,6 @@ class ApiController extends Controller
         $discount_total = (floatVal($data["total_sell_discount"]));
         $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
 
-        // dd($expenses);
-        // $data = [];
         $view = view('report.custom.api.profit_loss')
         ->with("discount_total",$discount_total)
         ->with("production_cost",$production_cost)
@@ -155,10 +150,11 @@ class ApiController extends Controller
     }
     //get locations with permited locations
     public static function GetLocations(Request $request,$id = null){
+        $permitted_locations = $request->user()->web_guard_permitted_locations();
         if($id !== null){
             return BusinessLocation::where('business_id', $request->user()->business_id)->where('id',$id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->first()->toArray();
         }
-        return Response::json(["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$request->user()->permitted_locations()],200);
+        return Response::json(["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$permitted_locations],200);
     }
     //Report 2 ------------------------------------------------------------------------------
     public function SalePurchase(Request $request){

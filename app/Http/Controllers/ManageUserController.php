@@ -199,6 +199,7 @@ class ManageUserController extends Controller
         $user = User::where('business_id', $business_id)
                     ->with(['contactAccess'])
                     ->findOrFail($id);
+                    // dd($user->can('location.1'));
 
         $roles = $this->getRolesArray($business_id);
 

@@ -1692,7 +1692,6 @@ class Util
         if ($permitted_locations == 'all' && $permissions != 'access_all_locations') {
             $user->revokePermissionTo('access_all_locations');
         }
-
         //Include location permissions
         if (empty($permissions) && ! empty($location_permissions)) {
             $permissions = [];

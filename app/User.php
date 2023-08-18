@@ -117,7 +117,34 @@ class User extends Authenticatable
             $permitted_locations = [];
             $all_locations = BusinessLocation::where('business_id', $business_id)->get();
             foreach ($all_locations as $location) {
+                //  dd($user);
                 if ($user->can('location.'.$location->id)) {
+                    $permitted_locations[] = $location->id;
+                }
+            }
+
+            return $permitted_locations;
+        }
+    }
+    public function web_guard_permitted_locations($business_id = null)
+    {
+        $user = $this;
+        // dd($user->hasPermissionTo('access_all_locations',"web"));
+        if ($user->hasPermissionTo('access_all_locations',"web")) {
+            return 'all';
+        } else {
+            $business_id = ! is_null($business_id) ? $business_id : null;
+            if (empty($business_id) && auth()->check()) {
+                $business_id = auth()->user()->business_id;
+            }
+            if (empty($business_id) && session()->has('business')) {
+                $business_id = session('business.id');
+            }
+
+            $permitted_locations = [];
+            $all_locations = BusinessLocation::where('business_id', $business_id)->get();
+            foreach ($all_locations as $location) {
+                if ($user->hasPermissionTo('location.'.$location->id,"web")) {
                     $permitted_locations[] = $location->id;
                 }
             }
