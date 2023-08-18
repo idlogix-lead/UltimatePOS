@@ -69,7 +69,48 @@ class Category extends Model
 
         return $categories;
     }
+    public static function GetList($business_id)
+    {
+        $all_categories = Category::where('business_id', $business_id)
+                            ->where('category_type', 'product')
+                            ->orderBy('name', 'asc')
+                            ->select(["id","name","parent_id"])
+                            ->get()
+                            ->toArray();
 
+        if (empty($all_categories)) {
+            return [];
+        }
+        $categories = [];
+        $sub_categories = [];
+
+        foreach ($all_categories as $category) {
+            if ($category['parent_id'] == 0) {
+                $categories[] = $category;
+            } else {
+                $sub_categories[] = $category;
+            }
+        }
+
+        $sub_cat_by_parent = [];
+        if (! empty($sub_categories)) {
+            foreach ($sub_categories as $sub_category) {
+                if (empty($sub_cat_by_parent[$sub_category['parent_id']])) {
+                    $sub_cat_by_parent[$sub_category['parent_id']] = [];
+                }
+
+                $sub_cat_by_parent[$sub_category['parent_id']][] = $sub_category;
+            }
+        }
+
+        foreach ($categories as $key => $value) {
+            if (! empty($sub_cat_by_parent[$value['id']])) {
+                $categories[$key]['sub_categories'] = $sub_cat_by_parent[$value['id']];
+            }
+        }
+
+        return $categories;
+    }
     /**
      * Category Dropdown
      *

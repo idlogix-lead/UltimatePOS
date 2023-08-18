@@ -46,4 +46,10 @@ class Brands extends Model
 
         return $brands;
     }
+    public static function GetList($business_id)
+    {
+        $query = Brands::where('business_id', $business_id);
+        $brands = $query->orderBy('name', 'asc')->select(['id', 'name'])->get()->toArray();
+        return $brands;
+    }
 }

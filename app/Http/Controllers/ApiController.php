@@ -3,9 +3,15 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Symfony\Component\Process\Process;
 
+use App\Category;
+use App\Unit;
+use App\Contact;
 use App\User;
 use App\BusinessLocation;
+use App\Brands;
+
 use Mpdf\Mpdf;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
@@ -55,6 +61,12 @@ class ApiController extends Controller
         ]);
         $user = User::where("username",$data['username'])->first();
         if(isset($user) && Hash::check($data["password"],$user->password )){
+            try{
+                // Remove all expired tokens
+                exec("php ../artisan passport:purge");
+            }catch(\Exception $e){
+
+            }
             return Response::json(["auth_token"=>$user->createToken("auth_token")->accessToken],200);
         }else{
             return Response::json([
@@ -202,7 +214,6 @@ class ApiController extends Controller
             'total_sell_return' => $total_sell_return_inc_tax,
             'difference' => $difference,
         ];
-        // return dd($data);
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.purchase_sell')->with("api",$data)->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(), $request),"Purchase&SellReport",$request->user()->business->date_format);
     }
     static function ApplyHeaderFooter($view,Request $request){
@@ -218,5 +229,46 @@ class ApiController extends Controller
     }
     static function headerFooterData(Request $request){
         
+    }
+
+    static function GetCustomers(Request $request){
+        if (! auth()->user()->can('customer.view')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        $customers = Contact::where("business_id",$request->user()->business_id)
+        ->where("type","customer")
+        ->where("contact_status","active")
+        ->where("deleted_at",null)
+        ->select(["id","name","supplier_business_name","contact_id"])
+        ->get();
+        return Response::json([
+            "customers" => $customers->toArray()
+        ],200);
+    }
+    static function GetSuppliers(Request $request){
+        if (! auth()->user()->can('customer.view')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        $customers = Contact::where("business_id",$request->user()->business_id)
+        ->where("type","supplier")
+        ->where("contact_status","active")
+        ->where("deleted_at",null)
+        ->select(["id","name","supplier_business_name","contact_id"])
+        ->get();
+        return Response::json([
+            "suppliers" => $customers->toArray()
+        ],200);
+    }
+    static function GetDetails(Request $request){
+        $business_id = $request->user()->business_id;
+        $categories = Category::GetList($business_id);
+        $brands = Brands::GetList($business_id);
+        $units = Unit::where('business_id', $business_id)
+                ->select(['id',"actual_name",'short_name'])->get()->toArray();
+        return Response::json(["units"=>$units,"brands"=>$brands,"categories"=>$categories],200);
     }
 }
