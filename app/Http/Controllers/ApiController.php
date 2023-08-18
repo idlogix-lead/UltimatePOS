@@ -160,14 +160,6 @@ class ApiController extends Controller
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format);
 
     }
-    //get locations with permited locations
-    public static function GetLocations(Request $request,$id = null){
-        $permitted_locations = $request->user()->web_guard_permitted_locations();
-        if($id !== null){
-            return BusinessLocation::where('business_id', $request->user()->business_id)->where('id',$id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->first()->toArray();
-        }
-        return Response::json(["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$permitted_locations],200);
-    }
     //Report 2 ------------------------------------------------------------------------------
     public function SalePurchase(Request $request){
         if (! $request->user()->can('purchase_n_sell_report.view')) {
@@ -231,6 +223,14 @@ class ApiController extends Controller
         
     }
 
+    //get Data for Parameters functions:=================================================================================================================================================================================================================================
+    public static function GetLocations(Request $request,$id = null){
+        $permitted_locations = $request->user()->web_guard_permitted_locations();
+        if($id !== null){
+            return BusinessLocation::where('business_id', $request->user()->business_id)->where('id',$id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->first()->toArray();
+        }
+        return Response::json(["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$permitted_locations],200);
+    }
     static function GetCustomers(Request $request){
         if (! auth()->user()->can('customer.view')) {
             return Response::json([
