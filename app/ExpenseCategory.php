@@ -25,7 +25,48 @@ class ExpenseCategory extends Model
     {
         return $this->hasMany(\App\ExpenseCategory::class, 'parent_id');
     }
+    public static function GetList($business_id)
+    {
+        $all_categories = ExpenseCategory::where('business_id', $business_id)
+                            // ->whereNull("parent_id")
+                            ->whereNull("deleted_at")
+                            ->select(["id",'name',"parent_id"])
+                            ->get()
+                            ->toArray();
 
+        if (empty($all_categories)) {
+            return [];
+        }
+        $categories = [];
+        $sub_categories = [];
+
+        foreach ($all_categories as $category) {
+            if ($category['parent_id'] == "") {
+                $categories[] = $category;
+            } else {
+                $sub_categories[] = $category;
+            }
+        }
+
+        $sub_cat_by_parent = [];
+        if (! empty($sub_categories)) {
+            foreach ($sub_categories as $sub_category) {
+                if (empty($sub_cat_by_parent[$sub_category['parent_id']])) {
+                    $sub_cat_by_parent[$sub_category['parent_id']] = [];
+                }
+
+                $sub_cat_by_parent[$sub_category['parent_id']][] = $sub_category;
+            }
+        }
+
+        foreach ($categories as $key => $value) {
+            if (! empty($sub_cat_by_parent[$value['id']])) {
+                $categories[$key]['sub_categories'] = $sub_cat_by_parent[$value['id']];
+            }
+        }
+
+        return $categories;
+    }
     /**
      * Scope a query to only include main categories.
      *

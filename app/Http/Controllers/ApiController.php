@@ -11,16 +11,21 @@ use App\Contact;
 use App\User;
 use App\BusinessLocation;
 use App\Brands;
+use App\ExpenseCategory;
+use App\Http\Controllers\ExpenseController;
+use DB;
 
 use Mpdf\Mpdf;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\ReportController;
+use Illuminate\Support\Facades\Http;
 
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
 use App\Utils\ProductUtil;
 use App\Utils\TransactionUtil;
+use App\Utils\CashRegisterUtil;
 
 class ApiController extends Controller
 {
@@ -29,12 +34,13 @@ class ApiController extends Controller
     protected $moduleUtil;
     protected $businessUtil;
 
-    public function __construct(TransactionUtil $transactionUtil, ProductUtil $productUtil, ModuleUtil $moduleUtil, BusinessUtil $businessUtil)
+    public function __construct(TransactionUtil $transactionUtil, ProductUtil $productUtil, ModuleUtil $moduleUtil, BusinessUtil $businessUtil, CashRegisterUtil $cashRegisterUtil)
     {
         $this->transactionUtil = $transactionUtil;
         $this->productUtil = $productUtil;
         $this->moduleUtil = $moduleUtil;
         $this->businessUtil = $businessUtil;
+        $this->cashRegisterUtil = $cashRegisterUtil;
     }
     static function exportToPDF($html,$title="pos_report",$format="Y-m-d"){
         $mpdf = new Mpdf(['tempDir' => public_path('uploads/temp'), 
@@ -208,6 +214,9 @@ class ApiController extends Controller
         ];
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.purchase_sell')->with("api",$data)->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(), $request),"Purchase&SellReport",$request->user()->business->date_format);
     }
+    // public function Expense_Report(Request $request){
+    //     dd("hello");
+    // }
     static function ApplyHeaderFooter($view,Request $request){
         $data = [
             "name" =>  $request->user()->business->name,
@@ -222,46 +231,156 @@ class ApiController extends Controller
     static function headerFooterData(Request $request){
         
     }
+    public function ExpenseReport(Request $request){
+        if (! $request->user()->can('expense_report.view')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        $start_date = $request->get('start_date');
+        $end_date = $request->get('end_date');
+        $business_id = $request->user()->business_id;
+        $filters = [
+            'start_date' => $start_date,
+            'end_date' => $end_date,
+            'location_id' => $request->location_id,
+            'category' => $request->category,
+        ];
+
+        $expenses = $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category");
+        $view =  view('report.custom.api.expense')
+        ->with("expenses",$expenses)
+        ->with('symbol',$request->user()->business->currency->symbol);
+        if($request->category && $request->category != ""){
+            $view = $view->with("cat_id",$request->category);
+        }
+        $view .= view("report.partials.api.style");
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
+    }
+    public function expense_ledger_report(Request $request){
+        if (! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        $exp = new ExpenseController($this->transactionUtil, $this->moduleUtil, $this->cashRegisterUtil);
+        $expenses = $exp->expenses_list()->get();
+        $view = view("expense.partials.list")->with("expenses",$expenses)->with('format',$request->user()->business->date_format)->with("symbol",$request->user()->business->currency->symbol);
+        $view .= view("report.partials.api.style");
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
+    }
 
     //get Data for Parameters functions:=================================================================================================================================================================================================================================
-    public static function GetLocations(Request $request,$id = null){
+    public static function GetLocations(Request $request,$id = null,$op =false){
         $permitted_locations = $request->user()->web_guard_permitted_locations();
         if($id !== null){
             return BusinessLocation::where('business_id', $request->user()->business_id)->where('id',$id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->first()->toArray();
         }
-        return Response::json(["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$permitted_locations],200);
+        $locs = ["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$permitted_locations];
+        if($op){
+            return $locs;
+        }
+        return Response::json($locs,200);
     }
-    static function GetCustomers(Request $request){
-        if (! auth()->user()->can('customer.view')) {
+    public function get_expense_ledger_params(Request $request){
+        $exp_categories = ExpenseCategory::GetList($request->user()->business_id);
+        $contacts = ApiController::GetContacts($request,true);
+        $locations = ApiController::GetLocations($request,null,true);
+        $users = User::where("business_id",$request->user()->business_id)
+        ->whereNull("deleted_at")->select(["id",DB::raw("CONCAT_WS(' ',surname,first_name,last_name) AS name")])->get()->toArray();
+        $data = [
+           "exp_categories"=>$exp_categories,
+           "contacts" =>  $contacts["contacts"],
+           "payment_status" =>  ['paid','due','partial'],
+           "users" =>  $users,
+        ];
+        $data = array_merge($data,$locations);
+        return Response::json($data);
+    }
+    public function check_validate(Request $request){
+        return Response::json(true,200);
+    }
+    public static function GetExpenseCategories(Request $request){
+        if (! $request->user()->can('expense_report.view')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        return Response::json(ExpenseCategory::where("business_id",$request->user()->business_id)
+        ->whereNull("parent_id")
+        ->whereNull("deleted_at")
+        ->select(["id",'name'])
+        ->get()->toArray());
+
+    }
+    static function GetContacts(Request $request,$op = false){
+        if (! auth()->user()->can('customer.view') && ! auth()->user()->can('supplier.view')) {
+            if($op){
+                return ["contacts" => []];
+            }
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
         }
         $customers = Contact::where("business_id",$request->user()->business_id)
-        ->where("type","customer")
+        // ->where("type","customer")
+        ->where("contact_status","active")
+        ->where("deleted_at",null)
+        ->select(["id","type","name","supplier_business_name","contact_id"])
+        ->get();
+        $data = [
+            "contacts" => $customers->toArray()
+        ];
+        if($op){
+            return $data;
+        }
+        return Response::json($data,200);
+    }
+    static function GetCustomers(Request $request,$op = false){
+        if (! auth()->user()->can('customer.view')) {
+            if($op){
+                return ["customers" => []];
+            }
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        $customers = Contact::where("business_id",$request->user()->business_id)
+        ->whereIn("type",["customer","both"])
         ->where("contact_status","active")
         ->where("deleted_at",null)
         ->select(["id","name","supplier_business_name","contact_id"])
         ->get();
-        return Response::json([
+        $data = [
             "customers" => $customers->toArray()
-        ],200);
+        ];
+        if($op){
+            return $data;
+        }
+        return Response::json($data,200);
     }
-    static function GetSuppliers(Request $request){
-        if (! auth()->user()->can('customer.view')) {
+    static function GetSuppliers(Request $request,$op = false){
+        if (! auth()->user()->can('supplier.view')) {
+            if($op){
+                return ["suppliers" => []];
+            }
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
         }
         $customers = Contact::where("business_id",$request->user()->business_id)
-        ->where("type","supplier")
+        ->whereIn("type",["supplier","both"])
         ->where("contact_status","active")
         ->where("deleted_at",null)
         ->select(["id","name","supplier_business_name","contact_id"])
         ->get();
-        return Response::json([
+        $data = [
             "suppliers" => $customers->toArray()
-        ],200);
+        ];
+        if($op){
+            return $data;
+        }
+        return Response::json($data,200);
     }
     static function GetDetails(Request $request){
         $business_id = $request->user()->business_id;

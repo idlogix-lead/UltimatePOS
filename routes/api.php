@@ -26,11 +26,17 @@ Route::middleware('auth:api')->group(function(){
     Route::post("/report/profitlosscustom1", [ApiController::class,"ProfitLossReportCustom1"]);
     Route::post("/report/businessprofitloss", [ApiController::class,"BusinessProfitLoss"]);
     Route::post("/report/salepurchase",[ApiController::class, "SalePurchase"]);
+    Route::post("/report/expense_overall",[ApiController::class, "ExpenseReport"]);
+    Route::post("/report/expense_ledger",[ApiController::class, "expense_ledger_report"]);
     // Route::get('/reports/get-profit/{by?}', 'ApiController@getProfit');
     Route::post("/getLocations",[ApiController::class, "GetLocations"]);
     Route::post("/getCustomers",[ApiController::class, "GetCustomers"]);
     Route::post("/getSuppliers",[ApiController::class, "GetSuppliers"]);
     Route::post("/getDetails",[ApiController::class, "GetDetails"]);
+    Route::post("/getExpenseCategories",[ApiController::class, "GetExpenseCategories"]);
+    Route::post("/get_expense_ledger_params",[ApiController::class, "get_expense_ledger_params"]);
+    Route::post("/validate",[ApiController::class, "check_validate"]);
+    // Route::post("/getExpenseCategories",[ApiController::class, "GetExpenseCategories"]);
 });
 
 
