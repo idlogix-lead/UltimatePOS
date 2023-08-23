@@ -14,7 +14,13 @@
         <table style="width:100%;border:0px solid #ddd;">
             <tr>
                 <td style="text-align:left;border:0px solid #ddd;"><label for="">Printed By: </label> {{$data["user"]}}</td>
-                <td style="text-align:right;border:0px solid #ddd;"><label for="">Date Range: </label> {{date($data["date_format"],strtotime($data["start_date"]))}} - {{date($data["date_format"],strtotime($data["end_date"]))}}</td>
+                <td style="text-align:right;border:0px solid #ddd;"><label for="">Date Range: </label> 
+                    @if (isset($data["start_date"]) && $data["end_date"])
+                        {{date($data["date_format"],strtotime($data["start_date"]))}} - {{date($data["date_format"],strtotime($data["end_date"]))}}
+                    @else
+                        No Date Range Selected
+                    @endif
+                </td>
             </tr>
         </table>
         

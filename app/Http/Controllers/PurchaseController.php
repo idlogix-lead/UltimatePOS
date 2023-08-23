@@ -921,102 +921,105 @@ class PurchaseController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    static function search_product(){
+        $term = request()->term;
+
+        $check_enable_stock = true;
+        if (isset(request()->check_enable_stock)) {
+            $check_enable_stock = filter_var(request()->check_enable_stock, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        $only_variations = false;
+        if (isset(request()->only_variations)) {
+            $only_variations = filter_var(request()->only_variations, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if (empty($term)) {
+            return json_encode([]);
+        }
+
+        $business_id = request()->user()->business_id;
+        $q = Product::leftJoin(
+            'variations',
+            'products.id',
+            '=',
+            'variations.product_id'
+        )
+            ->where(function ($query) use ($term) {
+                $query->where('products.name', 'like', '%'.$term.'%');
+                $query->orWhere('sku', 'like', '%'.$term.'%');
+                $query->orWhere('sub_sku', 'like', '%'.$term.'%');
+            })
+            ->active()
+            ->where('business_id', $business_id)
+            ->whereNull('variations.deleted_at')
+            ->select(
+                'products.id as product_id',
+                'products.name',
+                'products.type',
+                // 'products.sku as sku',
+                'variations.id as variation_id',
+                'variations.name as variation',
+                'variations.sub_sku as sub_sku'
+            )
+            ->groupBy('variation_id');
+
+        if ($check_enable_stock) {
+            $q->where('enable_stock', 1);
+        }
+        if (! empty(request()->location_id)) {
+            $q->ForLocation(request()->location_id);
+        }
+        $products = $q->get();
+
+        $products_array = [];
+        foreach ($products as $product) {
+            $products_array[$product->product_id]['name'] = $product->name;
+            $products_array[$product->product_id]['sku'] = $product->sub_sku;
+            $products_array[$product->product_id]['type'] = $product->type;
+            $products_array[$product->product_id]['variations'][]
+            = [
+                'variation_id' => $product->variation_id,
+                'variation_name' => $product->variation,
+                'sub_sku' => $product->sub_sku,
+            ];
+        }
+
+        $result = [];
+        $i = 1;
+        $no_of_records = $products->count();
+        if (! empty($products_array)) {
+            foreach ($products_array as $key => $value) {
+                if ($no_of_records > 1 && $value['type'] != 'single' && ! $only_variations) {
+                    $result[] = ['id' => $i,
+                        'text' => $value['name'].' - '.$value['sku'],
+                        'variation_id' => 0,
+                        'product_id' => $key,
+                    ];
+                }
+                $name = $value['name'];
+                foreach ($value['variations'] as $variation) {
+                    $text = $name;
+                    if ($value['type'] == 'variable') {
+                        $text = $text.' ('.$variation['variation_name'].')';
+                    }
+                    $i++;
+                    $result[] = ['id' => $i,
+                        'text' => $text.' - '.$variation['sub_sku'],
+                        'product_id' => $key,
+                        'variation_id' => $variation['variation_id'],
+                    ];
+                }
+                $i++;
+            }
+        }
+
+        return json_encode($result);
+    }
     public function getProducts()
     {
         if (request()->ajax()) {
-            $term = request()->term;
-
-            $check_enable_stock = true;
-            if (isset(request()->check_enable_stock)) {
-                $check_enable_stock = filter_var(request()->check_enable_stock, FILTER_VALIDATE_BOOLEAN);
-            }
-
-            $only_variations = false;
-            if (isset(request()->only_variations)) {
-                $only_variations = filter_var(request()->only_variations, FILTER_VALIDATE_BOOLEAN);
-            }
-
-            if (empty($term)) {
-                return json_encode([]);
-            }
-
-            $business_id = request()->session()->get('user.business_id');
-            $q = Product::leftJoin(
-                'variations',
-                'products.id',
-                '=',
-                'variations.product_id'
-            )
-                ->where(function ($query) use ($term) {
-                    $query->where('products.name', 'like', '%'.$term.'%');
-                    $query->orWhere('sku', 'like', '%'.$term.'%');
-                    $query->orWhere('sub_sku', 'like', '%'.$term.'%');
-                })
-                ->active()
-                ->where('business_id', $business_id)
-                ->whereNull('variations.deleted_at')
-                ->select(
-                    'products.id as product_id',
-                    'products.name',
-                    'products.type',
-                    // 'products.sku as sku',
-                    'variations.id as variation_id',
-                    'variations.name as variation',
-                    'variations.sub_sku as sub_sku'
-                )
-                ->groupBy('variation_id');
-
-            if ($check_enable_stock) {
-                $q->where('enable_stock', 1);
-            }
-            if (! empty(request()->location_id)) {
-                $q->ForLocation(request()->location_id);
-            }
-            $products = $q->get();
-
-            $products_array = [];
-            foreach ($products as $product) {
-                $products_array[$product->product_id]['name'] = $product->name;
-                $products_array[$product->product_id]['sku'] = $product->sub_sku;
-                $products_array[$product->product_id]['type'] = $product->type;
-                $products_array[$product->product_id]['variations'][]
-                = [
-                    'variation_id' => $product->variation_id,
-                    'variation_name' => $product->variation,
-                    'sub_sku' => $product->sub_sku,
-                ];
-            }
-
-            $result = [];
-            $i = 1;
-            $no_of_records = $products->count();
-            if (! empty($products_array)) {
-                foreach ($products_array as $key => $value) {
-                    if ($no_of_records > 1 && $value['type'] != 'single' && ! $only_variations) {
-                        $result[] = ['id' => $i,
-                            'text' => $value['name'].' - '.$value['sku'],
-                            'variation_id' => 0,
-                            'product_id' => $key,
-                        ];
-                    }
-                    $name = $value['name'];
-                    foreach ($value['variations'] as $variation) {
-                        $text = $name;
-                        if ($value['type'] == 'variable') {
-                            $text = $text.' ('.$variation['variation_name'].')';
-                        }
-                        $i++;
-                        $result[] = ['id' => $i,
-                            'text' => $text.' - '.$variation['sub_sku'],
-                            'product_id' => $key,
-                            'variation_id' => $variation['variation_id'],
-                        ];
-                    }
-                    $i++;
-                }
-            }
-
-            return json_encode($result);
+            return PurchaseController::search_product();
         }
     }
 

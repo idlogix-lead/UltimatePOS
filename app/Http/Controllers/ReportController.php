@@ -1745,6 +1745,99 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    static function productsellreportquery(Request $request, $business_id){
+        $variation_id = $request->get('variation_id', null);
+        $query = TransactionSellLine::join(
+            'transactions as t',
+            'transaction_sell_lines.transaction_id',
+            '=',
+            't.id'
+            )
+            ->join(
+                'variations as v',
+                'transaction_sell_lines.variation_id',
+                '=',
+                'v.id'
+            )
+            ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
+            ->join('contacts as c', 't.contact_id', '=', 'c.id')
+            ->join('products as p', 'pv.product_id', '=', 'p.id')
+            ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
+            ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
+            ->where('t.business_id', $business_id)
+            ->where('t.type', 'sell')
+            ->where('t.status', 'final')
+            ->with('transaction.payment_lines')
+            ->select(
+                'p.name as product_name',
+                'transaction_sell_lines.variation_id',
+                'p.type as product_type',
+                'p.product_custom_field1 as product_custom_field1',
+                'p.product_custom_field2 as product_custom_field2',
+                'pv.name as product_variation',
+                'v.name as variation_name',
+                'v.sub_sku',
+                'c.name as customer',
+                'c.supplier_business_name',
+                'c.contact_id',
+                't.id as transaction_id',
+                't.invoice_no',
+                't.transaction_date as transaction_date',
+                'transaction_sell_lines.unit_price_before_discount as unit_price',
+                'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
+                DB::raw('(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as sell_qty'),
+                'transaction_sell_lines.line_discount_type as discount_type',
+                'transaction_sell_lines.line_discount_amount as discount_amount',
+                'transaction_sell_lines.item_tax',
+                'tax_rates.name as tax',
+                'u.short_name as unit',
+                'transaction_sell_lines.parent_sell_line_id',
+                DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
+            )
+            ->groupBy('transaction_sell_lines.id');
+
+        if (! empty($variation_id)) {
+            $query->where('transaction_sell_lines.variation_id', $variation_id);
+        }
+        $start_date = $request->get('start_date');
+        $end_date = $request->get('end_date');
+        if (! empty($start_date) && ! empty($end_date)) {
+            $query->where('t.transaction_date', '>=', $start_date)
+                ->where('t.transaction_date', '<=', $end_date);
+        }
+
+        $permitted_locations = auth()->user()->permitted_locations();
+        if ($permitted_locations != 'all') {
+            $query->whereIn('t.location_id', $permitted_locations);
+        }
+
+        $location_id = $request->get('location_id', null);
+        if (! empty($location_id)) {
+            $query->where('t.location_id', $location_id);
+        }
+
+        $customer_id = $request->get('customer_id', null);
+        if (! empty($customer_id)) {
+            $query->where('t.contact_id', $customer_id);
+        }
+
+        $customer_group_id = $request->get('customer_group_id', null);
+        if (! empty($customer_group_id)) {
+            $query->leftjoin('customer_groups AS CG', 'c.customer_group_id', '=', 'CG.id')
+            ->where('CG.id', $customer_group_id);
+        }
+
+        $category_id = $request->get('category_id', null);
+        if (! empty($category_id)) {
+            $query->where('p.category_id', $category_id);
+        }
+
+        $brand_id = $request->get('brand_id', null);
+        if (! empty($brand_id)) {
+            $query->where('p.brand_id', $brand_id);
+        }
+        return $query;
+    }
     public function getproductSellReport(Request $request)
     {
         if (! auth()->user()->can('purchase_n_sell_report.view')) {
@@ -1760,95 +1853,7 @@ class ReportController extends Controller
         if ($request->ajax()) {
             $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
-            $variation_id = $request->get('variation_id', null);
-            $query = TransactionSellLine::join(
-                'transactions as t',
-                'transaction_sell_lines.transaction_id',
-                '=',
-                't.id'
-            )
-                ->join(
-                    'variations as v',
-                    'transaction_sell_lines.variation_id',
-                    '=',
-                    'v.id'
-                )
-                ->join('product_variations as pv', 'v.product_variation_id', '=', 'pv.id')
-                ->join('contacts as c', 't.contact_id', '=', 'c.id')
-                ->join('products as p', 'pv.product_id', '=', 'p.id')
-                ->leftjoin('tax_rates', 'transaction_sell_lines.tax_id', '=', 'tax_rates.id')
-                ->leftjoin('units as u', 'p.unit_id', '=', 'u.id')
-                ->where('t.business_id', $business_id)
-                ->where('t.type', 'sell')
-                ->where('t.status', 'final')
-                ->with('transaction.payment_lines')
-                ->select(
-                    'p.name as product_name',
-                    'p.type as product_type',
-                    'p.product_custom_field1 as product_custom_field1',
-                    'p.product_custom_field2 as product_custom_field2',
-                    'pv.name as product_variation',
-                    'v.name as variation_name',
-                    'v.sub_sku',
-                    'c.name as customer',
-                    'c.supplier_business_name',
-                    'c.contact_id',
-                    't.id as transaction_id',
-                    't.invoice_no',
-                    't.transaction_date as transaction_date',
-                    'transaction_sell_lines.unit_price_before_discount as unit_price',
-                    'transaction_sell_lines.unit_price_inc_tax as unit_sale_price',
-                    DB::raw('(transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) as sell_qty'),
-                    'transaction_sell_lines.line_discount_type as discount_type',
-                    'transaction_sell_lines.line_discount_amount as discount_amount',
-                    'transaction_sell_lines.item_tax',
-                    'tax_rates.name as tax',
-                    'u.short_name as unit',
-                    'transaction_sell_lines.parent_sell_line_id',
-                    DB::raw('((transaction_sell_lines.quantity - transaction_sell_lines.quantity_returned) * transaction_sell_lines.unit_price_inc_tax) as subtotal')
-                )
-                ->groupBy('transaction_sell_lines.id');
-
-            if (! empty($variation_id)) {
-                $query->where('transaction_sell_lines.variation_id', $variation_id);
-            }
-            $start_date = $request->get('start_date');
-            $end_date = $request->get('end_date');
-            if (! empty($start_date) && ! empty($end_date)) {
-                $query->where('t.transaction_date', '>=', $start_date)
-                    ->where('t.transaction_date', '<=', $end_date);
-            }
-
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $query->whereIn('t.location_id', $permitted_locations);
-            }
-
-            $location_id = $request->get('location_id', null);
-            if (! empty($location_id)) {
-                $query->where('t.location_id', $location_id);
-            }
-
-            $customer_id = $request->get('customer_id', null);
-            if (! empty($customer_id)) {
-                $query->where('t.contact_id', $customer_id);
-            }
-
-            $customer_group_id = $request->get('customer_group_id', null);
-            if (! empty($customer_group_id)) {
-                $query->leftjoin('customer_groups AS CG', 'c.customer_group_id', '=', 'CG.id')
-                ->where('CG.id', $customer_group_id);
-            }
-
-            $category_id = $request->get('category_id', null);
-            if (! empty($category_id)) {
-                $query->where('p.category_id', $category_id);
-            }
-
-            $brand_id = $request->get('brand_id', null);
-            if (! empty($brand_id)) {
-                $query->where('p.brand_id', $brand_id);
-            }
+           $query = ReportController::productsellreportquery($request,$business_id);
 
             return Datatables::of($query)
                 ->editColumn('product_name', function ($row) {

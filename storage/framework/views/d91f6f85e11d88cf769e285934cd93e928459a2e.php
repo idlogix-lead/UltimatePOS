@@ -14,7 +14,14 @@
         <table style="width:100%;border:0px solid #ddd;">
             <tr>
                 <td style="text-align:left;border:0px solid #ddd;"><label for="">Printed By: </label> <?php echo e($data["user"], false); ?></td>
-                <td style="text-align:right;border:0px solid #ddd;"><label for="">Date Range: </label> <?php echo e(date($data["date_format"],strtotime($data["start_date"])), false); ?> - <?php echo e(date($data["date_format"],strtotime($data["end_date"])), false); ?></td>
+                <td style="text-align:right;border:0px solid #ddd;"><label for="">Date Range: </label> 
+                    <?php if(isset($data["start_date"]) && $data["end_date"]): ?>
+                        <?php echo e(date($data["date_format"],strtotime($data["start_date"])), false); ?> - <?php echo e(date($data["date_format"],strtotime($data["end_date"])), false); ?>
+
+                    <?php else: ?>
+                        No Date Range Selected
+                    <?php endif; ?>
+                </td>
             </tr>
         </table>
         

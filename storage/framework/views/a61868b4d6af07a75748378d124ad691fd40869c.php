@@ -1,90 +1,108 @@
-@extends('layouts.app')
-@section('title', __('lang_v1.product_sell_report'))
+<?php $__env->startSection('title', __('lang_v1.product_sell_report')); ?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <!-- Content Header (Page header) -->
 <section class="content-header no-print">
-    <h1>{{ __('lang_v1.product_sell_report')}}</h1>
+    <h1><?php echo e(__('lang_v1.product_sell_report'), false); ?></h1>
 </section>
 
 <!-- Main content -->
 <section class="content no-print">
     <div class="row">
         <div class="col-md-12">
-            @component('components.filters', ['title' => __('report.filters')])
-              {!! Form::open(['url' => action([\App\Http\Controllers\ReportController::class, 'getStockReport']), 'method' => 'get', 'id' => 'product_sell_report_form' ]) !!}
+            <?php $__env->startComponent('components.filters', ['title' => __('report.filters')]); ?>
+              <?php echo Form::open(['url' => action([\App\Http\Controllers\ReportController::class, 'getStockReport']), 'method' => 'get', 'id' => 'product_sell_report_form' ]); ?>
+
                 <div class="col-md-3">
                     <div class="form-group">
-                    {!! Form::label('search_product', __('lang_v1.search_product') . ':') !!}
+                    <?php echo Form::label('search_product', __('lang_v1.search_product') . ':'); ?>
+
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-search"></i>
                             </span>
                             <input type="hidden" value="" id="variation_id">
-                            {!! Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'), 'autofocus']); !!}
+                            <?php echo Form::text('search_product', null, ['class' => 'form-control', 'id' => 'search_product', 'placeholder' => __('lang_v1.search_product_placeholder'), 'autofocus']); ?>
+
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('customer_id', __('contact.customer') . ':') !!}
+                        <?php echo Form::label('customer_id', __('contact.customer') . ':'); ?>
+
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-user"></i>
                             </span>
-                            {!! Form::select('customer_id', $customers, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
+                            <?php echo Form::select('customer_id', $customers, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); ?>
+
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('psr_customer_group_id', __( 'lang_v1.customer_group_name' ) . ':') !!}
-                        {!! Form::select('psr_customer_group_id', $customer_group, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_customer_group_id']); !!}
+                        <?php echo Form::label('psr_customer_group_id', __( 'lang_v1.customer_group_name' ) . ':'); ?>
+
+                        <?php echo Form::select('psr_customer_group_id', $customer_group, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_customer_group_id']); ?>
+
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('location_id', __('purchase.business_location').':') !!}
+                        <?php echo Form::label('location_id', __('purchase.business_location').':'); ?>
+
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <i class="fa fa-map-marker"></i>
                             </span>
-                            {!! Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); !!}
+                            <?php echo Form::select('location_id', $business_locations, null, ['class' => 'form-control select2', 'placeholder' => __('messages.please_select'), 'required']); ?>
+
                         </div>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('category_id', __('product.category') . ':') !!}
-                        {!! Form::select('category_id', $categories, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_filter_category_id', 'placeholder' => __('lang_v1.all')]); !!}
+                        <?php echo Form::label('category_id', __('product.category') . ':'); ?>
+
+                        <?php echo Form::select('category_id', $categories, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_filter_category_id', 'placeholder' => __('lang_v1.all')]); ?>
+
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('brand_id', __('product.brand') . ':') !!}
-                        {!! Form::select('brand_id', $brands, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_filter_brand_id', 'placeholder' => __('lang_v1.all')]); !!}
+                        <?php echo Form::label('brand_id', __('product.brand') . ':'); ?>
+
+                        <?php echo Form::select('brand_id', $brands, null, ['class' => 'form-control select2', 'style' => 'width:100%', 'id' => 'psr_filter_brand_id', 'placeholder' => __('lang_v1.all')]); ?>
+
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="form-group">
-                        {!! Form::label('product_sr_date_filter', __('report.date_range') . ':') !!}
-                        {!! Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'product_sr_date_filter', 'readonly']); !!}
+                        <?php echo Form::label('product_sr_date_filter', __('report.date_range') . ':'); ?>
+
+                        <?php echo Form::text('date_range', null, ['placeholder' => __('lang_v1.select_a_date_range'), 'class' => 'form-control', 'id' => 'product_sr_date_filter', 'readonly']); ?>
+
                     </div>
                 </div>
                 <div class="col-md-3">
-                    {!! Form::label('product_sr_start_time', __('lang_v1.time_range') . ':') !!}
-                    @php
+                    <?php echo Form::label('product_sr_start_time', __('lang_v1.time_range') . ':'); ?>
+
+                    <?php
                         $startDay = Carbon::now()->startOfDay();
                         $endDay   = $startDay->copy()->endOfDay();
-                    @endphp
+                    ?>
                     <div class="form-group">
-                        {!! Form::text('start_time', @format_time($startDay), ['style' => __('lang_v1.select_a_date_range'), 'class' => 'form-control width-50 f-left', 'id' => 'product_sr_start_time']); !!}
-                        {!! Form::text('end_time', @format_time($endDay), ['class' => 'form-control width-50 f-left', 'id' => 'product_sr_end_time']); !!}
+                        <?php echo Form::text('start_time', \Carbon::createFromTimestamp(strtotime($startDay))->format('h:i A'), ['style' => __('lang_v1.select_a_date_range'), 'class' => 'form-control width-50 f-left', 'id' => 'product_sr_start_time']); ?>
+
+                        <?php echo Form::text('end_time', \Carbon::createFromTimestamp(strtotime($endDay))->format('h:i A'), ['class' => 'form-control width-50 f-left', 'id' => 'product_sr_end_time']); ?>
+
                     </div>
                 </div>
-                {!! Form::close() !!}
-            @endcomponent
+                <?php echo Form::close(); ?>
+
+            <?php echo $__env->renderComponent(); ?>
         </div>
     </div>
     <div class="row">
@@ -92,45 +110,45 @@
             <div class="nav-tabs-custom">
                 <ul class="nav nav-tabs">
                     <li class="active">
-                        <a href="#psr_detailed_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> @lang('lang_v1.detailed')</a>
+                        <a href="#psr_detailed_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> <?php echo app('translator')->get('lang_v1.detailed'); ?></a>
                     </li>
                     <li>
-                        <a href="#psr_detailed_with_purchase_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> @lang('lang_v1.detailed_with_purchase')</a>
+                        <a href="#psr_detailed_with_purchase_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-list" aria-hidden="true"></i> <?php echo app('translator')->get('lang_v1.detailed_with_purchase'); ?></a>
                     </li>
                     <li>
-                        <a href="#psr_grouped_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-bars" aria-hidden="true"></i> @lang('lang_v1.grouped')</a>
+                        <a href="#psr_grouped_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-bars" aria-hidden="true"></i> <?php echo app('translator')->get('lang_v1.grouped'); ?></a>
                     </li>
                     <li>
-                        <a href="#psr_by_cat_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-bars" aria-hidden="true"></i> @lang('lang_v1.by_category')</a>
+                        <a href="#psr_by_cat_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-bars" aria-hidden="true"></i> <?php echo app('translator')->get('lang_v1.by_category'); ?></a>
                     </li>
                     <li>
-                        <a href="#psr_by_brand_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-bars" aria-hidden="true"></i> @lang('lang_v1.by_brand')</a>
+                        <a href="#psr_by_brand_tab" data-toggle="tab" aria-expanded="true"><i class="fa fa-bars" aria-hidden="true"></i> <?php echo app('translator')->get('lang_v1.by_brand'); ?></a>
                     </li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane active" id="psr_detailed_tab">
                         <div class="table-responsive">
-                            @include("report.partials.product_sell_report_table")
+                            <?php echo $__env->make("report.partials.product_sell_report_table", \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                         </div>
                     </div>
                     <div class="tab-pane" id="psr_detailed_with_purchase_tab">
                         <div class="table-responsive">
-                            @if(session('business.enable_lot_number'))
+                            <?php if(session('business.enable_lot_number')): ?>
                                 <input type="hidden" id="lot_enabled">
-                            @endif
+                            <?php endif; ?>
                             <table class="table table-bordered table-striped" 
                             id="product_sell_report_with_purchase_table" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>@lang('sale.product')</th>
-                                        <th>@lang('product.sku')</th>
-                                        <th>@lang('sale.customer_name')</th>
-                                        <th>@lang('sale.invoice_no')</th>
-                                        <th>@lang('messages.date')</th>
-                                        <th>@lang('lang_v1.purchase_ref_no')</th>
-                                        <th>@lang('lang_v1.lot_number')</th>
-                                        <th>@lang('lang_v1.supplier_name')</th>
-                                        <th>@lang('sale.qty')</th>
+                                        <th><?php echo app('translator')->get('sale.product'); ?></th>
+                                        <th><?php echo app('translator')->get('product.sku'); ?></th>
+                                        <th><?php echo app('translator')->get('sale.customer_name'); ?></th>
+                                        <th><?php echo app('translator')->get('sale.invoice_no'); ?></th>
+                                        <th><?php echo app('translator')->get('messages.date'); ?></th>
+                                        <th><?php echo app('translator')->get('lang_v1.purchase_ref_no'); ?></th>
+                                        <th><?php echo app('translator')->get('lang_v1.lot_number'); ?></th>
+                                        <th><?php echo app('translator')->get('lang_v1.supplier_name'); ?></th>
+                                        <th><?php echo app('translator')->get('sale.qty'); ?></th>
                                     </tr>
                                 </thead>
                             </table>
@@ -143,17 +161,17 @@
                             id="product_sell_grouped_report_table" style="width: 100%;">
                                 <thead>
                                     <tr>
-                                        <th>@lang('sale.product')</th>
-                                        <th>@lang('product.sku')</th>
-                                        <th>@lang('messages.date')</th>
-                                        <th>@lang('report.current_stock')</th>
-                                        <th>@lang('report.total_unit_sold')</th>
-                                        <th>@lang('sale.total')</th>
+                                        <th><?php echo app('translator')->get('sale.product'); ?></th>
+                                        <th><?php echo app('translator')->get('product.sku'); ?></th>
+                                        <th><?php echo app('translator')->get('messages.date'); ?></th>
+                                        <th><?php echo app('translator')->get('report.current_stock'); ?></th>
+                                        <th><?php echo app('translator')->get('report.total_unit_sold'); ?></th>
+                                        <th><?php echo app('translator')->get('sale.total'); ?></th>
                                     </tr>
                                 </thead>
                                 <tfoot>
                                     <tr class="bg-gray font-17 footer-total text-center">
-                                        <td colspan="4"><strong>@lang('sale.total'):</strong></td>
+                                        <td colspan="4"><strong><?php echo app('translator')->get('sale.total'); ?>:</strong></td>
                                         <td id="footer_total_grouped_sold"></td>
                                         <td><span class="display_currency" id="footer_grouped_subtotal" data-currency_symbol ="true"></span></td>
                                     </tr>
@@ -161,9 +179,9 @@
                             </table>
                         </div>
                     </div>
-                    @include('report.partials.product_sell_report_by_category')
+                    <?php echo $__env->make('report.partials.product_sell_report_by_category', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
 
-                    @include('report.partials.product_sell_report_by_brand')
+                    <?php echo $__env->make('report.partials.product_sell_report_by_brand', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?>
                 </div>
             </div>
         </div>
@@ -174,10 +192,10 @@
     aria-labelledby="gridSystemModalLabel">
 </div>
 
-@endsection
+<?php $__env->stopSection(); ?>
 
-@section('javascript')
-    <script src="{{ asset('js/report.js?v=' . $asset_v) }}"></script>
+<?php $__env->startSection('javascript'); ?>
+    <script src="<?php echo e(asset('js/report.js?v=' . $asset_v), false); ?>"></script>
     <script type="text/javascript">
         $(
         '#product_sell_report_form #location_id, #product_sell_report_form #customer_id, #psr_filter_brand_id, #psr_filter_category_id, #psr_customer_group_id'
@@ -303,4 +321,5 @@
                 });
             });
     </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH E:\xampp8.2\htdocs\UltimatePOS\resources\views/report/product_sell_report.blade.php ENDPATH**/ ?>

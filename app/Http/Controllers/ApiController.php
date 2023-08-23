@@ -12,6 +12,8 @@ use App\User;
 use App\BusinessLocation;
 use App\Brands;
 use App\ExpenseCategory;
+use App\CustomerGroup;
+use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ExpenseController;
 use DB;
 
@@ -269,7 +271,26 @@ class ApiController extends Controller
         $view .= view("report.partials.api.style");
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
     }
+    public function product_sell_report(Request $request){
+        if (! auth()->user()->can('purchase_n_sell_report.view')) {
+            return Response::json([
+                "message" => "Unauthorized action."
+            ],403);
+        }
+        $business_id = $request->user()->business_id;
+        $query = ReportController::productsellreportquery($request,$business_id);
+        $data = $query->get();
+        $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
 
+        $view = view("report.partials.product_sell_report_table")
+        ->with('payment_types',$payment_types)
+        ->with('data',$data)
+        ->with('format',$request->user()->business->date_format)
+        ->with("symbol",$request->user()->business->currency->symbol);
+        $view .= view("report.partials.api.style");
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"Product Sell Report",$request->user()->business->date_format);
+
+    }
     //get Data for Parameters functions:=================================================================================================================================================================================================================================
     public static function GetLocations(Request $request,$id = null,$op =false){
         $permitted_locations = $request->user()->web_guard_permitted_locations();
@@ -323,7 +344,6 @@ class ApiController extends Controller
             ],403);
         }
         $customers = Contact::where("business_id",$request->user()->business_id)
-        // ->where("type","customer")
         ->where("contact_status","active")
         ->where("deleted_at",null)
         ->select(["id","type","name","supplier_business_name","contact_id"])
@@ -359,6 +379,7 @@ class ApiController extends Controller
         }
         return Response::json($data,200);
     }
+    
     static function GetSuppliers(Request $request,$op = false){
         if (! auth()->user()->can('supplier.view')) {
             if($op){
@@ -389,5 +410,24 @@ class ApiController extends Controller
         $units = Unit::where('business_id', $business_id)
                 ->select(['id',"actual_name",'short_name'])->get()->toArray();
         return Response::json(["units"=>$units,"brands"=>$brands,"categories"=>$categories],200);
+    }
+    public function get_product_sell_report_params(Request $request){
+        $business_id = $request->user()->business_id;
+        $locations = ApiController::GetLocations($request,null,true);
+        $contacts = ApiController::GetCustomers($request,true);
+        $categories = Category::GetList($business_id);
+        $brands = Brands::GetList($business_id);
+        $customer_groups = CustomerGroup::where('business_id', $business_id)->select('name', 'id')->get();
+        $data = [
+            "locations" => $locations,
+            "contacts" => $contacts,
+            "categories" => $categories,
+            "brands" => $brands,
+            "customer_groups" => $customer_groups,
+        ];
+        return Response::json($data,200);
+    }
+    public function search_product(Request $request){
+        return PurchaseController::search_product();
     }
 }
