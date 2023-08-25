@@ -22,7 +22,7 @@
 		<div class="@if(!empty($ingredient['sub_units'])) input_inline @else input-group @endif">
 			<input 
 			type="text" 
-			data-min="1" 
+			data-min="0.1" 
 			class="form-control input-sm input_number mousetrap total_quantities" 
 			value="{{@format_quantity($ingredient['quantity'])}}" 
 			name="ingredients[{{$ingredient['id']}}][quantity]" 
