@@ -141,7 +141,7 @@ class ApiController extends Controller
         
     }
     public function ProfitLossReportCustom1(Request $request){
-        dd($request->user());
+        dd($request->user()->can('profit_loss_report.view'));
         // if (! $request->user()->can('profit_loss_report.view')) {
         //     return Response::json([
         //         "message" => "Unauthorized action."
