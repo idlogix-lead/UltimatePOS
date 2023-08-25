@@ -156,7 +156,7 @@ class ApiController extends Controller
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
         $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category")->toArray();
         $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $request->start_date, $request->end_date);
-        dd($revenue);
+        // dd($revenue);
         $discount_total = (floatVal($data["total_sell_discount"]));
         $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
 
@@ -167,7 +167,7 @@ class ApiController extends Controller
         ->with('symbol',$request->user()->business->currency->symbol)
         // ->with("business_locations",$business_locations)
         ->with("revenue",$revenue)->render();
-        return $view;
+        // return $view;
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format);
 
     }

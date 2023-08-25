@@ -123,7 +123,7 @@ class User extends Authenticatable
                 }
             }
 
-            return $permitted_locations;
+            return $permitted_locations == []?'all':$permitted_locations ;
         }
     }
     public function web_guard_permitted_locations($business_id = null)
@@ -149,7 +149,7 @@ class User extends Authenticatable
                 }
             }
 
-            return $permitted_locations;
+            return $permitted_locations == []?'all':$permitted_locations;
         }
     }
 
