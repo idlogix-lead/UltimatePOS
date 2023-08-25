@@ -3995,6 +3995,8 @@ class ReportController extends Controller
             if ($permitted_locations != 'all' && $permitted_locations != []) {
                 $query->whereIn('sale.location_id', $permitted_locations);
             }
+            dd($query->get());
+
             if (! empty($request->location_id)) {
                 $query->where('sale.location_id', $request->location_id);
             }
@@ -4004,7 +4006,6 @@ class ReportController extends Controller
                 $query->whereDate('sale.transaction_date', '>=', $start)
                             ->whereDate('sale.transaction_date', '<=', $end);
             }
-            dd($query->get());
             return $query;
     }
     public function ProfitLossCustomReport(Request $request){
