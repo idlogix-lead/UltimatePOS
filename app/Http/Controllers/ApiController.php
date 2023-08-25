@@ -148,10 +148,10 @@ class ApiController extends Controller
         // }
         $location_id = $request->location_id;
         $business_id = $request->user()->business_id;
-        dd($location_id,$business_id);
         // $business_locations = BusinessLocation::forDropdown($business_id, true);
         // return dd($business_locations);
         $query = ReportController::getRevenueCustom($request);
+        dd($location_id,$business_id);
         $revenue = $query->get() !== null?$query->get()->toArray():[];
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
         $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category")->toArray();
