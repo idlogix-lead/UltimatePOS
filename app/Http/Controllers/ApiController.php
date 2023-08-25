@@ -146,7 +146,7 @@ class ApiController extends Controller
         //         "message" => "Unauthorized action."
         //     ],403);
         // }
-        $location_id = $request->location_id;
+        $location_id = $request->location_id?$request->location_id:null;
         $business_id = $request->user()->business_id;
         // $business_locations = BusinessLocation::forDropdown($business_id, true);
         // return dd($business_locations);
@@ -154,8 +154,8 @@ class ApiController extends Controller
         $revenue = $query->get() !== null?$query->get()->toArray():[];
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
         $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category")->toArray();
-        dd($location_id,$business_id);
         $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $request->start_date, $request->end_date);
+        dd($location_id,$business_id);
         
         $discount_total = (floatVal($data["total_sell_discount"]));
         $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
