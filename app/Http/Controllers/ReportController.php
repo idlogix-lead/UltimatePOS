@@ -3991,7 +3991,6 @@ class ReportController extends Controller
             ->leftJoin('product_variations as PV', 'PV.id', '=', 'V.product_variation_id')
             ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
             ->groupBy('V.id');
-            dd($query->get());
 
             if ($permitted_locations != 'all' && $permitted_locations != []) {
                 $query->whereIn('sale.location_id', $permitted_locations);
@@ -4005,6 +4004,7 @@ class ReportController extends Controller
                 $query->whereDate('sale.transaction_date', '>=', $start)
                             ->whereDate('sale.transaction_date', '<=', $end);
             }
+            dd($query->get());
             return $query;
     }
     public function ProfitLossCustomReport(Request $request){
