@@ -148,7 +148,8 @@ class ApiController extends Controller
         // }
         $location_id = $request->location_id;
         $business_id = $request->user()->business_id;
-        $business_locations = BusinessLocation::forDropdown($business_id, true);
+        // $business_locations = BusinessLocation::forDropdown($business_id, true);
+        // return dd($business_locations);
         $query = ReportController::getRevenueCustom($request);
         $revenue = $query->get() !== null?$query->get()->toArray():[];
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
@@ -163,7 +164,7 @@ class ApiController extends Controller
         ->with("production_cost",$production_cost)
         ->with("expenses",$expenses)
         ->with('symbol',$request->user()->business->currency->symbol)
-        ->with("business_locations",$business_locations)
+        // ->with("business_locations",$business_locations)
         ->with("revenue",$revenue)->render();
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format);
 
