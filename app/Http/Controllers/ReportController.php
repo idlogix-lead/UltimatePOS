@@ -3995,11 +3995,11 @@ class ReportController extends Controller
             if ($permitted_locations != 'all' && $permitted_locations != []) {
                 $query->whereIn('sale.location_id', $permitted_locations);
             }
-            dd($query->get());
 
             if (! empty($request->location_id)) {
                 $query->where('sale.location_id', $request->location_id);
             }
+            dd($query->get());
             if (! empty($request->start_date) && ! empty($request->end_date)) {
                 $start = $request->start_date;
                 $end = $request->end_date;
