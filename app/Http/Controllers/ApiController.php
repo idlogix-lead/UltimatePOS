@@ -156,7 +156,7 @@ class ApiController extends Controller
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
         $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category")->toArray();
         $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $request->start_date, $request->end_date);
-        dd($revenue);
+        dd($query->get());
         $discount_total = (floatVal($data["total_sell_discount"]));
         $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
 

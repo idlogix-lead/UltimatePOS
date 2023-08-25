@@ -3991,9 +3991,9 @@ class ReportController extends Controller
             ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
             ->groupBy('V.id');
 
-            // if ($permitted_locations != 'all') {
-            //     $query->whereIn('sale.location_id', $permitted_locations);
-            // }
+            if ($permitted_locations != 'all' && $permitted_locations != []) {
+                $query->whereIn('sale.location_id', $permitted_locations);
+            }
             if (! empty($request->location_id)) {
                 $query->where('sale.location_id', $request->location_id);
             }
