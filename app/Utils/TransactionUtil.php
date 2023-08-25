@@ -2526,8 +2526,6 @@ class TransactionUtil extends Util
         $permitted_locations = auth()->user()->permitted_locations();
         if ($permitted_locations != 'all' && $permitted_locations != []) {
             $query->whereIn('transactions.location_id', $permitted_locations);
-            dd($permitted_locations);
-
         }
 
         if (! empty($start_date) && ! empty($end_date)) {
