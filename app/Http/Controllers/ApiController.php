@@ -141,6 +141,7 @@ class ApiController extends Controller
         
     }
     public function ProfitLossReportCustom1(Request $request){
+        dd($request->user());
         // if (! $request->user()->can('profit_loss_report.view')) {
         //     return Response::json([
         //         "message" => "Unauthorized action."
@@ -167,7 +168,7 @@ class ApiController extends Controller
         ->with('symbol',$request->user()->business->currency->symbol)
         // ->with("business_locations",$business_locations)
         ->with("revenue",$revenue)->render();
-        return $view;
+        // return $view;
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format);
 
     }
