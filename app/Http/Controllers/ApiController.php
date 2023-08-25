@@ -141,7 +141,7 @@ class ApiController extends Controller
         
     }
     public function ProfitLossReportCustom1(Request $request){
-        // dd($request->user()->can('profit_loss_report.view'));
+        dd($request->user()->can('profit_loss_report.view'),$request->user()->hasPermissionTo("profit_loss_report.view","web"));
         // if (! $request->user()->can('profit_loss_report.view')) {
         //     return Response::json([
         //         "message" => "Unauthorized action."
@@ -156,7 +156,6 @@ class ApiController extends Controller
         $filters = ["start_date" => $request->start_date ,"end_date"=>$request->end_date,"location_id"=>$location_id];
         $expenses =  $this->transactionUtil->getExpenseReport($business_id, $filters, "by_sub_category")->toArray();
         $data = $this->transactionUtil->getProfitLossDetails($business_id, $location_id, $request->start_date, $request->end_date);
-        dd($expenses);
         
         $discount_total = (floatVal($data["total_sell_discount"]));
         $production_cost = floatVal(isset($data["left_side_module_data"][1]["value"])?$data["left_side_module_data"][1]["value"]:0);
