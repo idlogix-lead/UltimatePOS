@@ -3986,12 +3986,12 @@ class ReportController extends Controller
 
         // $query->select([DB::raw("MAX(PL.id)"),DB::raw("SUM(transaction_sell_lines.quantity * (transaction_sell_lines.unit_price - PL.purchase_price_inc_tax) )  AS total_sale")]);
         $query = ReportController::getGrossProfit($business_id);
-        dd($query->get());
 
         $query->join('variations as V', 'transaction_sell_lines.variation_id', '=', 'V.id')
             ->leftJoin('product_variations as PV', 'PV.id', '=', 'V.product_variation_id')
             ->addSelect(DB::raw("IF(P.type='variable', CONCAT(P.name, ' - ', PV.name, ' - ', V.name, ' (', V.sub_sku, ')'), CONCAT(P.name, ' (', P.sku, ')')) as product"))
             ->groupBy('V.id');
+            dd($query->get());
 
             if ($permitted_locations != 'all' && $permitted_locations != []) {
                 $query->whereIn('sale.location_id', $permitted_locations);
