@@ -141,7 +141,8 @@ class ApiController extends Controller
         
     }
     public function ProfitLossReportCustom1(Request $request){
-        if (!$request->user()->hasPermissionTo("profit_loss_report.view","web")) {
+        if ( !($request->user()->can('profit_loss_report.view') or $request->user()->hasPermissionTo("profit_loss_report.view","web"))) {
+            
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
