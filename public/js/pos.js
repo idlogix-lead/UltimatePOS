@@ -1188,6 +1188,13 @@ $(document).ready(function() {
             $('#search_product').focus();
         }
     });
+    $('#pos_table').on('keypress', 'input.focus_add_product', function(e) {
+        var key = e.which;
+        if (key == 13) {
+            // the enter key code
+            $('#search_product').focus();
+        }
+    });
 
     $('#exchange_rate').change(function() {
         var curr_exchange_rate = 1;
