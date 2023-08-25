@@ -84,7 +84,7 @@ class ApiController extends Controller
     }
     //Overall business Profit Loss Report pdf
     public function BusinessProfitLoss(Request $request){
-        if (! $request->user()->can('profit_loss_report.view')) {
+        if (! ($request->user()->can('profit_loss_report.view') or $request->user()->hasPermissionTo("profit_loss_report.view","web"))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -100,7 +100,7 @@ class ApiController extends Controller
     }
     //Overall business Profit Loss Report by categories pdf 
     public function ProfitLossReportBy(Request $request,$by="product"){
-        if (! $request->user()->can('profit_loss_report.view')) {
+        if (! ($request->user()->can('profit_loss_report.view') or $request->user()->hasPermissionTo("profit_loss_report.view","web"))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -173,7 +173,7 @@ class ApiController extends Controller
     }
     //Report 2 ------------------------------------------------------------------------------
     public function SalePurchase(Request $request){
-        if (! $request->user()->can('purchase_n_sell_report.view')) {
+        if (! ($request->user()->can('purchase_n_sell_report.view') or $request->user()->hasPermissionTo("purchase_n_sell_report.view","web"))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -237,7 +237,7 @@ class ApiController extends Controller
         
     }
     public function ExpenseReport(Request $request){
-        if (! $request->user()->can('expense_report.view')) {
+        if (! ($request->user()->can('expense_report.view') or $request->user()->hasPermissionTo("expense_report.view","web"))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -263,7 +263,7 @@ class ApiController extends Controller
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
     }
     public function expense_ledger_report(Request $request){
-        if (! auth()->user()->can('all_expense.access') && ! auth()->user()->can('view_own_expense')) {
+        if (! ((auth()->user()->can('all_expense.access') && auth()->user()->can('view_own_expense')) or ($request->user()->hasPermissionTo("all_expense.access","web") && $request->user()->hasPermissionTo("view_own_expense","web")))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -275,7 +275,7 @@ class ApiController extends Controller
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
     }
     public function product_sell_report(Request $request){
-        if (! auth()->user()->can('purchase_n_sell_report.view')) {
+        if (! (auth()->user()->can('purchase_n_sell_report.view') or $request->user()->hasPermissionTo("purchase_n_sell_report.view","web"))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -325,7 +325,7 @@ class ApiController extends Controller
         return Response::json(true,200);
     }
     public static function GetExpenseCategories(Request $request){
-        if (! $request->user()->can('expense_report.view')) {
+        if (! ($request->user()->can('expense_report.view') or $request->user()->hasPermissionTo("expense_report.view","web"))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
@@ -338,7 +338,7 @@ class ApiController extends Controller
 
     }
     static function GetContacts(Request $request,$op = false){
-        if (! auth()->user()->can('customer.view') && ! auth()->user()->can('supplier.view')) {
+        if (! ((auth()->user()->can('customer.view') && auth()->user()->can('supplier.view')) or ($request->user()->hasPermissionTo("customer.view","web") && $request->user()->hasPermissionTo("supplier.view","web")))) {
             if($op){
                 return ["contacts" => []];
             }
@@ -360,7 +360,7 @@ class ApiController extends Controller
         return Response::json($data,200);
     }
     static function GetCustomers(Request $request,$op = false){
-        if (! auth()->user()->can('customer.view')) {
+        if (! (auth()->user()->can('customer.view') or $request->user()->hasPermissionTo("customer.view","web"))) {
             if($op){
                 return ["customers" => []];
             }
@@ -384,7 +384,7 @@ class ApiController extends Controller
     }
     
     static function GetSuppliers(Request $request,$op = false){
-        if (! auth()->user()->can('supplier.view')) {
+        if (! (auth()->user()->can('supplier.view') or $request->user()->hasPermissionTo("supplier.view","web"))) {
             if($op){
                 return ["suppliers" => []];
             }
