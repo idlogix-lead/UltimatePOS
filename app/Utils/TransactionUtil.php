@@ -2523,7 +2523,8 @@ class TransactionUtil extends Util
                     );
 
         //Check for permitted locations of a user/
-        $permitted_locations = auth()->user()->web_guard_permitted_locations();
+        $permitted_locations = auth()->user()->permitted_locations();
+        dd($permitted_locations);
         if ($permitted_locations != 'all') {
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
