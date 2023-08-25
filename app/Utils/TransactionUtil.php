@@ -2522,8 +2522,8 @@ class TransactionUtil extends Util
                         DB::raw('SUM(additional_expense_value_1 + additional_expense_value_2 + additional_expense_value_3 + additional_expense_value_4) as total_expense')
                     );
 
-        //Check for permitted locations of a user
-        $permitted_locations = auth()->user()->permitted_locations();
+        //Check for permitted locations of a user/
+        $permitted_locations = auth()->user()->web_guard_permitted_locations();
         if ($permitted_locations != 'all') {
             $query->whereIn('transactions.location_id', $permitted_locations);
         }
