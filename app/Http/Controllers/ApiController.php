@@ -141,11 +141,11 @@ class ApiController extends Controller
         
     }
     public function ProfitLossReportCustom1(Request $request){
-        if (! $request->user()->can('profit_loss_report.view')) {
-            return Response::json([
-                "message" => "Unauthorized action."
-            ],403);
-        }
+        // if (! $request->user()->can('profit_loss_report.view')) {
+        //     return Response::json([
+        //         "message" => "Unauthorized action."
+        //     ],403);
+        // }
         $location_id = $request->location_id;
         $business_id = $request->user()->business_id;
         $business_locations = BusinessLocation::forDropdown($business_id, true);
