@@ -504,7 +504,6 @@ $(document).ready(function() {
                 //added by haris custom due total
                 total_custom_due+=$(data[r].opening_balance).data('orig-value') ? 
                 parseFloat($(data[r].opening_balance).data('orig-value')) : 0;
-                console.log(total_custom_due);
 
                 total_return_due += $(data[r].return_due).data('orig-value') ? 
                 parseFloat($(data[r].return_due).data('orig-value')) : 0;
