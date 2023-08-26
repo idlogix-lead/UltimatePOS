@@ -232,7 +232,9 @@ class ContactController extends Controller
                 }
             )
             ->editColumn('opening_balance', function ($row) {
-                $html = '<span data-orig-value="'.$row->opening_balance.'">'.$this->transactionUtil->num_f($row->opening_balance, true).'</span>';
+                //similer as customer added by haris
+                $opening_balance_due = $row->opening_balance - $row->opening_balance_paid;
+                $html = '<span data-orig-value="'.$opening_balance_due.'">'.$this->transactionUtil->num_f($opening_balance_due, true).'</span>';
 
                 return $html;
             })
