@@ -196,8 +196,9 @@
                     <strong>
                         @lang('sale.total'):
                     </strong></td>
-                        <td class="footer_custom_due"></td>
-                        <td></td>
+
+                        <td @if($type == 'customer') class="footer_custom_due" @endif></td>
+                        <td @if($type == 'supplier') class="footer_custom_due" @endif></td>
                         <td></td>
                         <td></td>
                         <td></td>
