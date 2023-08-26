@@ -362,7 +362,7 @@ class ContactController extends Controller
 
         $contacts = Datatables::of($query)
             ->addColumn('address', '{{implode(", ", array_filter([$address_line_1, $address_line_2, $city, $state, $country, $zip_code]))}}')
-            ->addColumn(
+            ->editColumn(
                 'due',
                 '<span class="contact_due" data-orig-value="{{$total_invoice - $invoice_received - $total_ledger_discount}}" data-highlight=true>@format_currency($total_invoice - $invoice_received - $total_ledger_discount)</span>'
             )
@@ -457,7 +457,10 @@ class ContactController extends Controller
                 }
             )
             ->editColumn('opening_balance', function ($row) {
+                // opening balance is used as Remainig due by haris
                 $opening_balance_due = $row->opening_balance - $row->opening_balance_paid;
+                //for total due to see i added the next line haris
+                $opening_balance_due += ($row->total_invoice - $row->invoice_received - $row->total_ledger_discount);
                 $html = '<span data-orig-value="'.$opening_balance_due.'">'.$this->transactionUtil->num_f($opening_balance_due, true).'</span>';
 
                 return $html;

@@ -496,15 +496,21 @@ $(document).ready(function() {
         "footerCallback": function ( row, data, start, end, display ) {
             var total_due = 0;
             var total_return_due = 0;
+            var total_custom_due = 0;
             for (var r in data){
                 total_due += $(data[r].due).data('orig-value') ? 
                 parseFloat($(data[r].due).data('orig-value')) : 0;
+                
+                //added by haris custom due total
+                total_custom_due+=$(data[r].opening_balance).data('orig-value') ? 
+                parseFloat($(data[r].opening_balance).data('orig-value')) : 0;
 
                 total_return_due += $(data[r].return_due).data('orig-value') ? 
                 parseFloat($(data[r].return_due).data('orig-value')) : 0;
             }
             $('.footer_contact_due').html(__currency_trans_from_en(total_due));
             $('.footer_contact_return_due').html(__currency_trans_from_en(total_return_due));
+            $('.footer_custom_due').html(__currency_trans_from_en(total_custom_due));
         }
     });
 

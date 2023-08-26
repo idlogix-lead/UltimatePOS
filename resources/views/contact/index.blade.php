@@ -135,7 +135,7 @@
                             <th>@lang('lang_v1.credit_limit')</th>
                             <th>@lang('contact.pay_term')</th>
                             {{-- <th>@lang('account.opening_balance') By haris</th> --}}
-                            <th>@lang('lang_v1.opening_balance_due')</th>
+                            <th>Total Due Amount</th>
                             <th>@lang('lang_v1.advance_balance')</th>
                             <th>@lang('lang_v1.added_on')</th>
                             @if($reward_enabled)
@@ -184,26 +184,24 @@
                 </thead>
                 <tfoot>
                     <tr class="bg-gray font-17 text-center footer-total">
+                        <td @if($type == 'supplier')
+                        colspan="6"
+                    @elseif( $type == 'customer')
+                        @if($reward_enabled)
+                            colspan="9"
+                        @else
+                            colspan="8"
+                        @endif
+                    @endif >
+                    <strong>
+                        @lang('sale.total'):
+                    </strong></td>
+                        <td class="footer_custom_due"></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td
-                            @if($type == 'supplier')
-                                colspan="6"
-                            @elseif( $type == 'customer')
-                                @if($reward_enabled)
-                                    colspan="9"
-                                @else
-                                    colspan="8"
-                                @endif
-                            @endif>
-                                <strong>
-                                    @lang('sale.total'):
-                                </strong>
-                        </td>
                         <td class="footer_contact_due"></td>
                         <td class="footer_contact_return_due"></td>
                         <td></td>
