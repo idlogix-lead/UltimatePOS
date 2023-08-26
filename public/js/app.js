@@ -2851,11 +2851,3 @@ $(document).on('submit', 'form#pay_contact_due_form', function(e){
     }
     
 })
-
-// $(document).ready(function(){
-//     $('.focus_add_product').keyup(function(e){
-//         if(e.keyCode == 13){
-//             console.log("Enter");
-//         }
-//     })
-// });

@@ -138,7 +138,8 @@ $(document).ready(function() {
             $('#price_group').val(data.selling_price_group_id);
             $('#price_group').change();
         } else {
-            $('#price_group').val('');
+            // $('#price_group').val(''); modified by haris to ->v
+            $('#price_group option:selected').val('0');
             $('#price_group').change();
         }
         if ($('.contact_due_text').length) {
