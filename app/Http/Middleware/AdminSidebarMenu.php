@@ -20,7 +20,7 @@ class AdminSidebarMenu
         if ($request->ajax()) {
             return $next($request);
         }
-        dd(auth()->user()->can('customer.view'));
+        dd(auth()->user()->hasPermissionTo('customer.view',"web"));
         Menu::create('admin-sidebar-menu', function ($menu) {
             $enabled_modules = ! empty(session('business.enabled_modules')) ? session('business.enabled_modules') : [];
 
