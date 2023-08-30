@@ -317,7 +317,7 @@ class ApiController extends Controller
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format,$request);
     }
     public function expense_ledger_report(Request $request){
-        if (! ((auth()->user()->can('all_expense.access') && auth()->user()->can('view_own_expense')) or ($request->user()->hasPermissionTo("all_expense.access","web") && $request->user()->hasPermissionTo("view_own_expense","web")))) {
+        if (! ((auth()->user()->can('all_expense.access') or auth()->user()->can('view_own_expense')) or ($request->user()->hasPermissionTo("all_expense.access","web") or $request->user()->hasPermissionTo("view_own_expense","web")))) {
             return Response::json([
                 "message" => "Unauthorized action."
             ],403);
