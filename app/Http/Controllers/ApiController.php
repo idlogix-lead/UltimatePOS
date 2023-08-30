@@ -72,14 +72,15 @@ class ApiController extends Controller
         $user = $request->user()->id;
         $location = $loc;
         $file = $title.".pdf";
-        dd(file_exists($path),$path);
+        $path = storage_path('app\api_report').$path;
+        // dd(file_exists($path),$path);
 
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
         }
 
         $path = $path."\\".$file;
-        $mpdf->OutputFile(storage_path('app\api_report').$path);
+        $mpdf->OutputFile($path);
         return Response::json(["report_url" => URL::temporarySignedRoute(
             'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => 1,"file"=>$file]
         )],200); 
