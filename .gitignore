@@ -1,6 +1,7 @@
 /node_modules
 /vendor
-/storage/logs
-/storage/framework/*
+/storage/logs/*
+/storage/debuger/*
+/storage/app/*
 .env
 backup.bat 
