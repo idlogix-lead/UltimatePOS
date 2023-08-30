@@ -72,7 +72,7 @@ class ApiController extends Controller
         $user = $request->user()->id;
         $location = $loc;
         $file = $title.".pdf";
-        dd(file_exists($path));
+        dd(file_exists($path),$path);
 
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
