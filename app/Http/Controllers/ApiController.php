@@ -75,7 +75,9 @@ class ApiController extends Controller
 
         if (!file_exists($path)) {
             mkdir($path, 0777, true);
+            dd("done");
         }
+
         $path = $path."\\".$file;
         $mpdf->OutputFile(storage_path('app\api_report').$path);
         return Response::json(["report_url" => URL::temporarySignedRoute(
