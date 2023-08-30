@@ -22,6 +22,8 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Response;
 use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 
 use App\Utils\BusinessUtil;
 use App\Utils\ModuleUtil;
@@ -44,7 +46,7 @@ class ApiController extends Controller
         $this->businessUtil = $businessUtil;
         $this->cashRegisterUtil = $cashRegisterUtil;
     }
-    static function exportToPDF($html,$title="pos_report",$format="Y-m-d"){
+    static function exportToPDF($html,$title="pos_report",$format="Y-m-d",Request $request){
         $mpdf = new Mpdf(['tempDir' => public_path('uploads/temp'), 
             'mode' => 'utf-8', 
             'autoScriptToLang' => true,
@@ -58,7 +60,42 @@ class ApiController extends Controller
         $date  = date($format);
         $mpdf->SetFooter("Generated At: ".$date);
         $mpdf->WriteHTML($html);
-        return $mpdf->OutputHttpDownload($title.".pdf");
+
+        if(!empty($request->location_id)){
+            $path = "\business_".$request->user()->business_id."\location_".$request->location_id."\user_".$request->user()->id;
+            $loc = $request->location_id;
+        }else{
+            $path = "\business_".$request->user()->business_id."\all_locations\user_".$request->user()->id;
+            $loc = "all";
+        }
+        $business = $request->user()->business_id;
+        $user = $request->user()->id;
+        $location = $loc;
+        $file = $title.".pdf";
+
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+        $path = $path."\\".$file;
+        $mpdf->OutputFile(storage_path('app\api_report').$path);
+        return Response::json(["report_url" => URL::temporarySignedRoute(
+            'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => 1,"file"=>$file]
+        )],200); 
+    }
+    public function getReport($business,$location,$user,$file){
+        if (!request()->hasValidSignature()) {
+            abort(401);
+        }
+        if($location != "all"){
+            $path = "\business_".$business."\location_".$location."\user_".$user;
+        }else{
+            $path = "\business_".$business."\all_locations\user_".$user;
+        }
+        $file_path = 'app\api_report'.$path."\\".$file;
+        return Response::make(file_get_contents(storage_path($file_path)), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$file.'"'
+        ]);
     }
 
     // get Api Access Token via login
@@ -95,7 +132,7 @@ class ApiController extends Controller
         $data = $this->transactionUtil->getProfitLossDetails($request->user()->business_id, $location_id, $start_date, $end_date);
         $stock_sp = (ReportController::getStockBySellingPriceApi($request,["t"=>$this->transactionUtil]));
         $data = (array_merge($data,$stock_sp));
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.profit_loss_details', compact('data'))->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(),$request),"BusinessProfitLoss",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.profit_loss_details', compact('data'))->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(),$request),"BusinessProfitLoss",$request->user()->business->date_format,$request);
 
     }
     //Overall business Profit Loss Report by categories pdf 
@@ -137,7 +174,7 @@ class ApiController extends Controller
         }else{
             $profit = $profit.view("report.partials.api.style")->with('symbol',$request->user()->business->currency->symbol);
         }
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($profit,$request),"ProfitLossReport",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($profit,$request),"ProfitLossReport",$request->user()->business->date_format,$request);
         
     }
     public function ProfitLossReportCustom1(Request $request){
@@ -168,7 +205,7 @@ class ApiController extends Controller
         // ->with("business_locations",$business_locations)
         ->with("revenue",$revenue)->render();
         // return $view;
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view,$request),"ProfitLossReportCustom",$request->user()->business->date_format,$request);
 
     }
     //Report 2 ------------------------------------------------------------------------------
@@ -217,18 +254,32 @@ class ApiController extends Controller
             'total_sell_return' => $total_sell_return_inc_tax,
             'difference' => $difference,
         ];
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.purchase_sell')->with("api",$data)->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(), $request),"Purchase&SellReport",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter(view('report.partials.purchase_sell')->with("api",$data)->with('symbol',$request->user()->business->currency->symbol).view("report.partials.api.style")->render(), $request),"Purchase&SellReport",$request->user()->business->date_format,$request);
     }
     // public function Expense_Report(Request $request){
     //     dd("hello");
     // }
     static function ApplyHeaderFooter($view,Request $request){
+        $null_location = ["name"=>"All Locations ","location_id"=>" - "];
+        if(!empty($request->location_id)){
+            $location = ApiController::GetLocations($request,$request->location_id);
+            if($location == []){
+                $msg = [
+                    "message" => 'No Location found for this user with this id: '.$request->location_id."."
+                ];
+                print_r(json_encode($msg));
+                exit;
+            }
+        }else{
+            $location = $null_location;
+        }
+
         $data = [
             "name" =>  $request->user()->business->name,
             "start_date" => $request->get("start_date")?$request->get("start_date"):"",
             "end_date" => $request->get("end_date")?$request->get("end_date"):"",
             "user" => $request->user()->getUserFullNameAttribute(),
-            "location" => !empty($request->location_id)?(ApiController::GetLocations($request,$request->location_id)):["name"=>"All Locations ","location_id"=>" - "],
+            "location" => $location,
             "date_format" => $request->user()->business->date_format
         ];
         return view("report.partials.api.header")->with("data",$data).$view.view("report.partials.api.footer")->with("data",$request->user()->business->date_format);
@@ -260,7 +311,7 @@ class ApiController extends Controller
             $view = $view->with("cat_id",$request->category);
         }
         $view .= view("report.partials.api.style");
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format,$request);
     }
     public function expense_ledger_report(Request $request){
         if (! ((auth()->user()->can('all_expense.access') && auth()->user()->can('view_own_expense')) or ($request->user()->hasPermissionTo("all_expense.access","web") && $request->user()->hasPermissionTo("view_own_expense","web")))) {
@@ -272,7 +323,7 @@ class ApiController extends Controller
         $expenses = $exp->expenses_list()->get();
         $view = view("expense.partials.list")->with("expenses",$expenses)->with('format',$request->user()->business->date_format)->with("symbol",$request->user()->business->currency->symbol);
         $view .= view("report.partials.api.style");
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"ExpenseReport",$request->user()->business->date_format,$request);
     }
     public function product_sell_report(Request $request){
         if (! (auth()->user()->can('purchase_n_sell_report.view') or $request->user()->hasPermissionTo("purchase_n_sell_report.view","web"))) {
@@ -291,14 +342,18 @@ class ApiController extends Controller
         ->with('format',$request->user()->business->date_format)
         ->with("symbol",$request->user()->business->currency->symbol);
         $view .= view("report.partials.api.style");
-        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"Product Sell Report",$request->user()->business->date_format);
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"Product Sell Report",$request->user()->business->date_format,$request);
 
     }
     //get Data for Parameters functions:=================================================================================================================================================================================================================================
     public static function GetLocations(Request $request,$id = null,$op =false){
         $permitted_locations = $request->user()->web_guard_permitted_locations();
         if($id !== null){
-            return BusinessLocation::where('business_id', $request->user()->business_id)->where('id',$id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->first()->toArray();
+            $Loc = BusinessLocation::where('business_id', $request->user()->business_id)->where('id',$id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->first();
+            if($Loc){
+                return $Loc->toArray();
+            }
+            return [];
         }
         $locs = ["locations"=>BusinessLocation::where('business_id', $request->user()->business_id)->where('deleted_at',null)->select(["id","business_id","location_id","name"])->get()->toArray(),"permitted_locations"=>$permitted_locations];
         if($op){

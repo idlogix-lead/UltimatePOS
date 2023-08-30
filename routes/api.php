@@ -42,6 +42,6 @@ Route::middleware('auth:api')->group(function(){
     // Route::post("/getExpenseCategories",[ApiController::class, "GetExpenseCategories"]);
 });
 
-
+Route::get("/get_report/{bus}/{loc}/{user}/{file}",[ApiController::class,"getReport"])->name("getReport");
 
 Route::post("/login",[ApiController::class,"login"]);
