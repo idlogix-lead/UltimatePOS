@@ -95,6 +95,7 @@ class ApiController extends Controller
             $path = "\business_".$business."\all_locations\user_".$user;
         }
         $file_path = 'app\api_report'.$path."\\".$file;
+        return file_get_contents(storage_path($file_path));
         return Response::make(file_get_contents(storage_path($file_path)), 200, [
             'Content-Type' => 'application/pdf',
             'Content-Disposition' => 'inline; filename="'.$file.'"'
