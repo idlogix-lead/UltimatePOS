@@ -97,7 +97,6 @@ class ApiController extends Controller
         $file_path = 'app\api_report'.$path."\\".$file;
         return Response::make(file_get_contents(storage_path($file_path)), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$file.'"'
         ]);
     }
 
@@ -346,7 +345,6 @@ class ApiController extends Controller
         ->with("symbol",$request->user()->business->currency->symbol);
         $view .= view("report.partials.api.style");
         return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"Product Sell Report",$request->user()->business->date_format,$request);
-
     }
     //get Data for Parameters functions:=================================================================================================================================================================================================================================
     public static function GetLocations(Request $request,$id = null,$op =false){
@@ -490,5 +488,10 @@ class ApiController extends Controller
     }
     public function search_product(Request $request){
         return PurchaseController::search_product();
+    }
+    // ------------------------------------------------------------------------
+    // Cusstomer summery
+    public function customer_summary(){
+        dd("hello");
     }
 }
