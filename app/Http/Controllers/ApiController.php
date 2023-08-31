@@ -81,10 +81,10 @@ class ApiController extends Controller
 
         $path = $path."\\".$file;
         // $mpdf->OutputFile($path);
-        $mpdf->OutputBinaryData();
-        return Response::json(["report_url" => URL::temporarySignedRoute(
-            'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => $user,"file"=>$file]
-        )],200); 
+        return $mpdf->OutputBinaryData();
+        // return Response::json(["report_url" => URL::temporarySignedRoute(
+        //     'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => $user,"file"=>$file]
+        // )],200); 
     }
     public function getReport($business,$location,$user,$file){
         if (!request()->hasValidSignature()) {
