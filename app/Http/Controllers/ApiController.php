@@ -47,7 +47,6 @@ class ApiController extends Controller
         $this->cashRegisterUtil = $cashRegisterUtil;
     }
     static function exportToPDF($html,$title="pos_report",$format="Y-m-d",Request $request){
-        return $html;
         $mpdf = new Mpdf(['tempDir' => public_path('uploads/temp'), 
             'mode' => 'utf-8', 
             'autoScriptToLang' => true,
