@@ -81,7 +81,7 @@ class ApiController extends Controller
 
         $path = $path."\\".$file;
         // $mpdf->OutputFile($path);
-        return $mpdf->Output();
+        return $mpdf->OutputBinaryData();
         // return Response::json(["report_url" => URL::temporarySignedRoute(
         //     'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => $user,"file"=>$file]
         // )],200); 
