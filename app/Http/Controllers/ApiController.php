@@ -80,11 +80,10 @@ class ApiController extends Controller
         }
 
         $path = $path."\\".$file;
-        // $mpdf->OutputFile($path);
-        return $mpdf->OutputBinaryData();
-        // return Response::json(["report_url" => URL::temporarySignedRoute(
-        //     'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => $user,"file"=>$file]
-        // )],200); 
+        $mpdf->OutputFile($path);
+        return Response::json(["report_url" => URL::temporarySignedRoute(
+            'getReport', now()->addMinutes(30), ['bus'=>$business,"loc"=>$location,'user' => $user,"file"=>$file]
+        )],200); 
     }
     public function getReport($business,$location,$user,$file){
         if (!request()->hasValidSignature()) {
@@ -99,7 +98,7 @@ class ApiController extends Controller
         // return file_get_contents(storage_path($file_path));
         return Response::make(file_get_contents(storage_path($file_path)), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'attachment; filename="'.$file.'"'
+            'Content-Disposition' => 'inline; filename="'.$file.'"'
         ]);
     }
 
