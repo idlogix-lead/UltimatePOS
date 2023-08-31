@@ -98,7 +98,7 @@ class ApiController extends Controller
         // return file_get_contents(storage_path($file_path));
         return Response::make(file_get_contents(storage_path($file_path)), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$file.'"'
+            'Content-Disposition' => 'inline; '
         ]);
     }
 
