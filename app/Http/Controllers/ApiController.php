@@ -12,6 +12,7 @@ use App\User;
 use App\BusinessLocation;
 use App\Brands;
 use App\ExpenseCategory;
+use App\SellingPriceGroup;
 use App\CustomerGroup;
 use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ExpenseController;
@@ -55,7 +56,8 @@ class ApiController extends Controller
             'autoArabic' => true,
             'margin_top' => 8,
             'margin_bottom' => 8,
-            'format' => 'A4'
+            'format' => 'A4',
+            'orientation' => 'L'
         ]);
         $date  = date($format);
         $mpdf->SetFooter("Generated At: ".$date);
@@ -98,7 +100,7 @@ class ApiController extends Controller
         // return file_get_contents(storage_path($file_path));
         return Response::make(file_get_contents(storage_path($file_path)), 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; '
+            'Content-Disposition' => 'inline; filename='.$file.''
         ]);
     }
 
@@ -493,7 +495,72 @@ class ApiController extends Controller
     }
     // ------------------------------------------------------------------------
     // Cusstomer summery
-    public function customer_summary(){
+    public function customer_summary(Request $request){
         dd("hello");
+        // temporarily postpond
+    }
+    public function register_report(Request $request){
+        $business_id = $request->user()->business_id;
+        $registers = ReportController::CashRegisterCustom($request,$business_id);
+        $payment_types = $this->transactionUtil->payment_types(null, true, $business_id);
+        $t_util = $this->transactionUtil;
+        $view = view('report.partials.register_report')
+        ->with("date_format",$request->user()->business->date_format)
+        ->with("payment_types",$payment_types)
+        ->with("t_util",$t_util)
+        ->with('symbol',$request->user()->business->currency->symbol)
+        ->with("registers",$registers->get());
+        $view .= view("report.partials.api.style");
+        
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"Cash Register Report",$request->user()->business->date_format,$request);
+    }
+    public function register_details(Request $request){
+        dd("Not needed at yet, suggested by Mr shair ali");
+        // $business_id = request()->user()->business_id;
+        // $register_details = $this->cashRegisterUtil->getRegisterDetails(1);
+        // $user_id = auth()->user()->id;
+        // $open_time = $register_details['open_time'];
+        // $close_time = \Carbon::now()->toDateTimeString();
+        // $is_types_of_service_enabled = $this->moduleUtil->isModuleEnabled('types_of_service');
+        // $details = $this->cashRegisterUtil->getRegisterTransactionDetails($user_id, $open_time, $close_time, $is_types_of_service_enabled);
+        // $payment_types = $this->cashRegisterUtil->payment_types($register_details->location_id, true, $business_id);
+    //     return dd(
+    //         $register_details,
+    //         $is_types_of_service_enabled,
+    //         $details,
+    //         $payment_types 
+    //     );
+
+        // return view('cash_register.register_details')
+        //         ->with(compact('register_details', 'details', 'payment_types', 'close_time'));
+    }
+    public function stock_report(Request $request){
+        $business_id = request()->user()->business_id;
+        $selling_price_groups = SellingPriceGroup::where('business_id', $business_id)->get();
+        $allowed_selling_price_group = false;
+        foreach ($selling_price_groups as $selling_price_group) {
+            if (auth()->user()->can('selling_price_group.'.$selling_price_group->id)) {
+                $allowed_selling_price_group = true;
+                break;
+            }
+        }
+        if ($this->moduleUtil->isModuleInstalled('Manufacturing') && (auth()->user()->can('superadmin') || $this->moduleUtil->hasThePermissionInSubscription($business_id, 'manufacturing_module'))) {
+            $show_manufacturing_data = 1;
+        } else {
+            $show_manufacturing_data = 0;
+        }
+        $filters = request()->only(['location_id', 'category_id', 'sub_category_id', 'brand_id', 'unit_id', 'tax_id', 'type',
+        'only_mfg_products', 'active_state',  'not_for_selling', 'repair_model_id', 'product_id', 'active_state', ]);
+        $filters['not_for_selling'] = isset($filters['not_for_selling']) && $filters['not_for_selling'] == 'true' ? 1 : 0;
+        $filters['show_manufacturing_data'] = $show_manufacturing_data;
+        $for =  'datatables';
+
+        $products = $this->productUtil->getProductStockDetails($business_id, $filters, $for)->get();
+        $view = view("report.partials.stock_report_table")
+        ->with("show_manufacturing_data",$show_manufacturing_data)
+        ->with('symbol',$request->user()->business->currency->symbol)
+        ->with("products",$products);
+        $view .= view("report.partials.api.style");
+        return ApiController::exportToPDF(ApiController::ApplyHeaderFooter($view, $request),"Stock Report",$request->user()->business->date_format,$request);
     }
 }

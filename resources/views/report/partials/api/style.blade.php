@@ -1,39 +1,27 @@
 <style>
     table{
+        font-size: 12px !important;
+    }
+    table{
         width:100%;
-        /* height:100%; */
         border-collapse: collapse;
-        /* border-color:black; */
-        font-weight: 13px;
     }
     table, th, td{
         border:1px solid #ddd;
     }
     tr th,td{
         text-align:center;
-        /* width:50%; */
     }
     tr th{
-        background-color:black;
+        background-color:#3c8dbc;
         color:white;
+        padding:2px !important;
     }
     tr:nth-child(even) {background-color: #f2f2f2;}
 
     tfoot tr th,tfoot td{
-        background-color:grey;
+        background-color:#424242;
         color:white;
     }
 
 </style>
-{{-- <script>
-    const selectElements = document.querySelectorAll(".display_currency");
-    document.addEventListener("DOMContentLoaded", () => {
-        for (const selectElement of selectElements) {
-            const selectedValue = selectElement.options[selectElement.selectedIndex].value;
-            const roundedValue = Math.round(selectedValue, 2);
-
-            // Update the value of the selected option with the rounded value.
-            selectElement.options[selectElement.selectedIndex].value = roundedValue;
-        }
-    });
-</script> --}}

@@ -149,7 +149,6 @@ class RoleController extends Controller
                         $permissions[] = $value;
                     }
                 }
-
                 $this->__createPermissionIfNotExists($permissions);
 
                 if (! empty($permissions)) {
@@ -164,6 +163,7 @@ class RoleController extends Controller
                 ];
             }
         } catch (\Exception $e) {
+            // dd($e);
             \Log::emergency('File:'.$e->getFile().'Line:'.$e->getLine().'Message:'.$e->getMessage());
 
             $output = ['success' => 0,

@@ -28,8 +28,11 @@ Route::middleware('auth:api')->group(function(){
     Route::post("/report/salepurchase",[ApiController::class, "SalePurchase"]);
     Route::post("/report/expense_overall",[ApiController::class, "ExpenseReport"]);
     Route::post("/report/product_sell_report",[ApiController::class, "product_sell_report"]);
+    Route::post("/report/stock_report",[ApiController::class, "stock_report"]);
     // --------------------------------------------------------------------
     Route::post("/report/expense_ledger",[ApiController::class, "expense_ledger_report"]);
+    Route::post("/report/register_report",[ApiController::class, "register_report"]);
+    Route::post("/report/register_details",[ApiController::class, "register_details"]);
     Route::post("/ledger/customer_summary",[ApiController::class, "customer_summary"]);
     // Route::get('/reports/get-profit/{by?}', 'ApiController@getProfit');
     Route::post("/getLocations",[ApiController::class, "GetLocations"]);

@@ -993,72 +993,77 @@ class ReportController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    static function CashRegisterCustom(Request $request,$business_id){
+        $registers = CashRegister::leftjoin(
+            'cash_register_transactions as ct',
+            'ct.cash_register_id',
+            '=',
+            'cash_registers.id'
+        )->join(
+            'users as u',
+            'u.id',
+            '=',
+            'cash_registers.user_id'
+            )
+            ->leftJoin(
+                'business_locations as bl',
+                'bl.id',
+                '=',
+                'cash_registers.location_id'
+            )
+            ->where('cash_registers.business_id', $business_id)
+            ->select(
+                'cash_registers.*',
+                DB::raw(
+                    "CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), '<br>', COALESCE(u.email, '')) as user_name"
+                ),
+                'bl.name as location_name',
+                DB::raw("SUM(IF(pay_method='cash', IF(transaction_type='sell', amount, 0), 0)) as total_cash_payment"),
+                DB::raw("SUM(IF(pay_method='cheque', IF(transaction_type='sell', amount, 0), 0)) as total_cheque_payment"),
+                DB::raw("SUM(IF(pay_method='card', IF(transaction_type='sell', amount, 0), 0)) as total_card_payment"),
+                DB::raw("SUM(IF(pay_method='bank_transfer', IF(transaction_type='sell', amount, 0), 0)) as total_bank_transfer_payment"),
+                DB::raw("SUM(IF(pay_method='other', IF(transaction_type='sell', amount, 0), 0)) as total_other_payment"),
+                DB::raw("SUM(IF(pay_method='advance', IF(transaction_type='sell', amount, 0), 0)) as total_advance_payment"),
+                DB::raw("SUM(IF(pay_method='custom_pay_1', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_1"),
+                DB::raw("SUM(IF(pay_method='custom_pay_2', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_2"),
+                DB::raw("SUM(IF(pay_method='custom_pay_3', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_3"),
+                DB::raw("SUM(IF(pay_method='custom_pay_4', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_4"),
+                DB::raw("SUM(IF(pay_method='custom_pay_5', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_5"),
+                DB::raw("SUM(IF(pay_method='custom_pay_6', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_6"),
+                DB::raw("SUM(IF(pay_method='custom_pay_7', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_7")
+            )->groupBy('cash_registers.id');
+            // web_guard_permitted_locations
+        $permitted_locations = auth()->user()->web_guard_permitted_locations();
+        if ($permitted_locations != 'all') {
+            $registers->whereIn('cash_registers.location_id', $permitted_locations);
+        }
+
+        if (! empty($request->input('user_id'))) {
+            $registers->where('cash_registers.user_id', $request->input('user_id'));
+        }
+        if (! empty($request->input('status'))) {
+            $registers->where('cash_registers.status', $request->input('status'));
+        }
+        $start_date = $request->get('start_date');
+        $end_date = $request->get('end_date');
+
+        if (! empty($start_date) && ! empty($end_date)) {
+            $registers->whereDate('cash_registers.created_at', '>=', $start_date)
+                    ->whereDate('cash_registers.created_at', '<=', $end_date);
+        }
+
+        return $registers;
+    }
     public function getRegisterReport(Request $request)
     {
         if (! auth()->user()->can('register_report.view')) {
             abort(403, 'Unauthorized action.');
         }
-        $business_id = $request->session()->get('user.business_id');
+        $business_id = $request->user()->business_id;
 
         //Return the details in ajax call
         if ($request->ajax()) {
-            $registers = CashRegister::leftjoin(
-                'cash_register_transactions as ct',
-                'ct.cash_register_id',
-                '=',
-                'cash_registers.id'
-            )->join(
-                'users as u',
-                'u.id',
-                '=',
-                'cash_registers.user_id'
-                )
-                ->leftJoin(
-                    'business_locations as bl',
-                    'bl.id',
-                    '=',
-                    'cash_registers.location_id'
-                )
-                ->where('cash_registers.business_id', $business_id)
-                ->select(
-                    'cash_registers.*',
-                    DB::raw(
-                        "CONCAT(COALESCE(surname, ''), ' ', COALESCE(first_name, ''), ' ', COALESCE(last_name, ''), '<br>', COALESCE(u.email, '')) as user_name"
-                    ),
-                    'bl.name as location_name',
-                    DB::raw("SUM(IF(pay_method='cash', IF(transaction_type='sell', amount, 0), 0)) as total_cash_payment"),
-                    DB::raw("SUM(IF(pay_method='cheque', IF(transaction_type='sell', amount, 0), 0)) as total_cheque_payment"),
-                    DB::raw("SUM(IF(pay_method='card', IF(transaction_type='sell', amount, 0), 0)) as total_card_payment"),
-                    DB::raw("SUM(IF(pay_method='bank_transfer', IF(transaction_type='sell', amount, 0), 0)) as total_bank_transfer_payment"),
-                    DB::raw("SUM(IF(pay_method='other', IF(transaction_type='sell', amount, 0), 0)) as total_other_payment"),
-                    DB::raw("SUM(IF(pay_method='advance', IF(transaction_type='sell', amount, 0), 0)) as total_advance_payment"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_1', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_1"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_2', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_2"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_3', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_3"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_4', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_4"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_5', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_5"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_6', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_6"),
-                    DB::raw("SUM(IF(pay_method='custom_pay_7', IF(transaction_type='sell', amount, 0), 0)) as total_custom_pay_7")
-                )->groupBy('cash_registers.id');
-
-            $permitted_locations = auth()->user()->permitted_locations();
-            if ($permitted_locations != 'all') {
-                $registers->whereIn('cash_registers.location_id', $permitted_locations);
-            }
-
-            if (! empty($request->input('user_id'))) {
-                $registers->where('cash_registers.user_id', $request->input('user_id'));
-            }
-            if (! empty($request->input('status'))) {
-                $registers->where('cash_registers.status', $request->input('status'));
-            }
-            $start_date = $request->get('start_date');
-            $end_date = $request->get('end_date');
-
-            if (! empty($start_date) && ! empty($end_date)) {
-                $registers->whereDate('cash_registers.created_at', '>=', $start_date)
-                        ->whereDate('cash_registers.created_at', '<=', $end_date);
-            }
+            $registers = ReportController::CashRegisterCustom($request,$business_id);
 
             return Datatables::of($registers)
                 ->editColumn('total_card_payment', function ($row) {
