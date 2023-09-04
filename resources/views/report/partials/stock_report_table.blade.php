@@ -82,7 +82,7 @@
                     <td>{{$row->category_name}}</td>
                     <td>{{$row->location_name}}</td>
                     <td>{{$symbol}}.{{round($row->unit_price,2)}}</td>
-                    <td>{{$row->enable_stock == 0?"--":$row->stock." ".$row->unit}}</td>
+                    <td>{{$row->enable_stock == 0?"--":round($row->stock,2)." ".$row->unit}}</td>
                     <td>{{$symbol}}.{{round($row->stock_price,2)}}</td>
                     <td>{{$symbol}}.{{round($stock_price,2)}}</td>
                     <td>{{$symbol}}.{{round($potential_profit,2)}}</td>
