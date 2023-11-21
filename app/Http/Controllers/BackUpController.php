@@ -77,6 +77,8 @@ class BackUpController extends Controller
 
             // start the backup process
             Artisan::call('backup:run');
+            // start the clean drive process
+            Artisan::call('backup:clean');
             $output = Artisan::output();
 
             // log the results
