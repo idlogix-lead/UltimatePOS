@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="expense" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="d18537f2-7002-4f0a-a7e2-7dac79ed263c">
-	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Mysql"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Xampp DB"/>
 	<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 	<style name="Table_TH" mode="Opaque" backcolor="#00FFFF">
 		<box>
@@ -87,7 +87,6 @@
 	<subDataset name="Expenses" uuid="f01c3f97-faa8-4451-906c-c528212f78fe">
 		<property name="com.jaspersoft.studio.data.sql.tables" value=""/>
 		<property name="com.jaspersoft.studio.data.defaultdataadapter" value="Mysql"/>
-		<parameter name="business_id" class="java.lang.Integer"/>
 		<parameter name="start_date" class="java.lang.String">
 			<defaultValueExpression><![CDATA[$P{start_date}]]></defaultValueExpression>
 		</parameter>
@@ -110,51 +109,43 @@ WHERE
 	 AND tr.business_id = $P{business_id} 
 	 AND STR_TO_DATE( tr.created_at,'%Y-%m-%d') BETWEEN   $P{start_date} AND  $P{end_date}]]>
 		</queryString>
-		<field name="category" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="name"/>
-			<property name="com.jaspersoft.studio.field.label" value="category"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="expense_categories"/>
-		</field>
-		<field name="sub_category" class="java.lang.String">
-			<property name="com.jaspersoft.studio.field.name" value="name"/>
-			<property name="com.jaspersoft.studio.field.label" value="sub_category"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="expense_categories"/>
-		</field>
-		<field name="created_at" class="java.sql.Date">
+		<field name="lead_created" class="java.sql.Date">
 			<property name="com.jaspersoft.studio.field.name" value="created_at"/>
 			<property name="com.jaspersoft.studio.field.label" value="created_at"/>
 		</field>
-		<field name="final_total" class="java.math.BigDecimal">
-			<property name="com.jaspersoft.studio.field.name" value="final_total"/>
-			<property name="com.jaspersoft.studio.field.label" value="final_total"/>
-			<property name="com.jaspersoft.studio.field.tree.path" value="transactions"/>
-		</field>
+		<field name="lead_firstname" class="java.lang.String"/>
 	</subDataset>
-	<parameter name="business_id" class="java.lang.Integer">
-		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
-	</parameter>
 	<parameter name="start_date" class="java.lang.String">
 		<defaultValueExpression><![CDATA["2023-08-04"]]></defaultValueExpression>
 	</parameter>
 	<parameter name="end_date" class="java.lang.String">
-		<defaultValueExpression><![CDATA["2023-08-04"]]></defaultValueExpression>
+		<defaultValueExpression><![CDATA["2023-11-04"]]></defaultValueExpression>
 	</parameter>
 	<queryString>
-		<![CDATA[SELECT ec.name AS category,
-	ec2.name AS sub_category,
-	STR_TO_DATE( tr.created_at,'%Y-%m-%d') AS created_at,
-	final_total
-FROM transactions AS tr
-	LEFT JOIN expense_categories AS ec ON 
-	 tr.expense_category_id = ec.id 
-	LEFT JOIN expense_categories AS ec2 ON 
-	 tr.expense_sub_category_id = ec2.id 
-WHERE 
-	 tr.type = "expense"
-	 AND tr.status = "final"
-	 AND tr.business_id = $P{business_id} 
-	 AND STR_TO_DATE( tr.created_at,'%Y-%m-%d') BETWEEN   $P{start_date} AND  $P{end_date}]]>
+		<![CDATA[Select    ocrm.leads.lead_firstname, ocrm.leads.lead_lastname,   ocrm.leads.lead_phone,  ocrm.leads.lead_created 
+ FROM ocrm.leads 
+WHERE STR_TO_DATE(ocrm.leads.lead_created ,'%Y-%m-%d') BETWEEN $P{start_date} AND  $P{end_date}]]>
 	</queryString>
+	<field name="lead_firstname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lead_firstname"/>
+		<property name="com.jaspersoft.studio.field.label" value="lead_firstname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="leads"/>
+	</field>
+	<field name="lead_lastname" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lead_lastname"/>
+		<property name="com.jaspersoft.studio.field.label" value="lead_lastname"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="leads"/>
+	</field>
+	<field name="lead_phone" class="java.lang.String">
+		<property name="com.jaspersoft.studio.field.name" value="lead_phone"/>
+		<property name="com.jaspersoft.studio.field.label" value="lead_phone"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="leads"/>
+	</field>
+	<field name="lead_created" class="java.sql.Timestamp">
+		<property name="com.jaspersoft.studio.field.name" value="lead_created"/>
+		<property name="com.jaspersoft.studio.field.label" value="lead_created"/>
+		<property name="com.jaspersoft.studio.field.tree.path" value="leads"/>
+	</field>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
@@ -199,7 +190,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="14" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Category]]></text>
+								<text><![CDATA[First Name]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 3_TD" height="30">
@@ -208,7 +199,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="false"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{category}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{lead_firstname}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -217,23 +208,15 @@ WHERE
 						<jr:tableHeader style="Table 3_TH" height="30" rowSpan="1"/>
 						<jr:tableFooter style="Table 3_TH" height="30" rowSpan="1"/>
 						<jr:columnHeader style="Table 3_CH" height="30" rowSpan="1">
-							<staticText>
-								<reportElement x="0" y="0" width="139" height="30" uuid="33618856-bd17-4ecf-ba3c-8b61bd3e09f9"/>
-								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="14" isBold="true"/>
-								</textElement>
-								<text><![CDATA[Sub Category]]></text>
-							</staticText>
-						</jr:columnHeader>
-						<jr:detailCell style="Table 3_TD" height="30">
 							<textField>
-								<reportElement x="0" y="0" width="139" height="30" uuid="f95d10ae-45d7-4aa8-bc34-04110eeee0b7"/>
+								<reportElement x="0" y="0" width="139" height="30" uuid="0f9b17a5-cc70-44b5-afdf-0f8eed13eac0"/>
 								<textElement textAlignment="Center" verticalAlignment="Middle">
-									<font size="12" isBold="false"/>
+									<font size="16"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{sub_category}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[Last Name]]></textFieldExpression>
 							</textField>
-						</jr:detailCell>
+						</jr:columnHeader>
+						<jr:detailCell style="Table 3_TD" height="30"/>
 					</jr:column>
 					<jr:column width="139" uuid="4c780429-fa27-4dc4-a39a-9af7d394168c">
 						<property name="com.jaspersoft.studio.components.table.model.column.name" value="Column3"/>
@@ -247,7 +230,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="14" isBold="true"/>
 								</textElement>
-								<text><![CDATA[Total]]></text>
+								<text><![CDATA[Phone]]></text>
 							</staticText>
 						</jr:columnHeader>
 						<jr:detailCell style="Table 3_TD" height="30">
@@ -256,7 +239,6 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="false"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{final_total}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>
@@ -279,7 +261,7 @@ WHERE
 								<textElement textAlignment="Center" verticalAlignment="Middle">
 									<font size="12" isBold="false"/>
 								</textElement>
-								<textFieldExpression><![CDATA[$F{created_at}]]></textFieldExpression>
+								<textFieldExpression><![CDATA[$F{lead_created}]]></textFieldExpression>
 							</textField>
 						</jr:detailCell>
 					</jr:column>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ASCII"?>
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:advanced="http://www.eclipse.org/ui/2010/UIModel/application/ui/advanced" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_dHzkETXHEe60ZZ9pE7I02g" elementId="org.eclipse.e4.legacy.ide.application" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_dH0yMDXHEe60ZZ9pE7I02g" bindingContexts="_dH0yOTXHEe60ZZ9pE7I02g">
-  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;expense.jrxml&quot; tooltip=&quot;MyReports/src/expense.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/src/expense.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor.jasper&quot; name=&quot;expense.jasper&quot; tooltip=&quot;MyReports/src/expense.jasper&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/src/expense.jasper&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;expense.jrxml&quot; tooltip=&quot;MyReports/expense.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/expense.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
+  <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;workbench>&#xD;&#xA;&lt;mruList>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;leads.jrxml&quot; tooltip=&quot;source/MyReports/src/leads.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/source/MyReports/src/leads.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor.jasper&quot; name=&quot;leads.jasper&quot; tooltip=&quot;source/MyReports/src/leads.jasper&quot;>&#xD;&#xA;&lt;persistable path=&quot;/source/MyReports/src/leads.jasper&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;leads.jrxml&quot; tooltip=&quot;MyReports/src/leads.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/src/leads.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;expense.jrxml&quot; tooltip=&quot;MyReports/src/expense.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/src/expense.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor.jasper&quot; name=&quot;expense.jasper&quot; tooltip=&quot;MyReports/src/expense.jasper&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/src/expense.jasper&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;file factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;expense.jrxml&quot; tooltip=&quot;MyReports/expense.jrxml&quot;>&#xD;&#xA;&lt;persistable path=&quot;/MyReports/expense.jrxml&quot;/>&#xD;&#xA;&lt;/file>&#xD;&#xA;&lt;/mruList>&#xD;&#xA;&lt;/workbench>"/>
   <tags>activeSchemeId:org.eclipse.ui.defaultAcceleratorConfiguration</tags>
   <children xsi:type="basic:TrimmedWindow" xmi:id="_dH0yMDXHEe60ZZ9pE7I02g" elementId="IDEWindow" contributorURI="platform:/plugin/org.eclipse.ui.workbench" selectedElement="_eyrKcjXHEe60ZZ9pE7I02g" x="0" y="0" width="1024" height="768">
     <persistedState key="coolBarVisible" value="true"/>
@@ -23,7 +23,7 @@
           <tags>persp.actionSet:org.eclipse.ui.externaltools.ExternalToolsSet</tags>
           <tags>persp.actionSet:org.eclipse.search.searchActionSet</tags>
           <children xsi:type="basic:PartSashContainer" xmi:id="_e_pPczXHEe60ZZ9pE7I02g" selectedElement="_e_pPejXHEe60ZZ9pE7I02g" horizontal="true">
-            <children xsi:type="basic:PartSashContainer" xmi:id="_e_pPdDXHEe60ZZ9pE7I02g" containerData="2500" selectedElement="_e_pPdTXHEe60ZZ9pE7I02g">
+            <children xsi:type="basic:PartSashContainer" xmi:id="_e_pPdDXHEe60ZZ9pE7I02g" containerData="2500" selectedElement="_e_pPeDXHEe60ZZ9pE7I02g">
               <children xsi:type="basic:PartStack" xmi:id="_e_pPdTXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.RepositoryMStack" containerData="5000" selectedElement="_e_pPdzXHEe60ZZ9pE7I02g">
                 <children xsi:type="advanced:Placeholder" xmi:id="_e_pPdjXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.Repository" ref="_e_gskDXHEe60ZZ9pE7I02g" closeable="true">
                   <tags>View</tags>
@@ -113,12 +113,12 @@
       <tags>categoryTag:Help</tags>
     </sharedElements>
     <sharedElements xsi:type="advanced:Area" xmi:id="_e_Q08DXHEe60ZZ9pE7I02g" elementId="org.eclipse.ui.editorss" selectedElement="_e_Q08TXHEe60ZZ9pE7I02g">
-      <children xsi:type="basic:PartStack" xmi:id="_e_Q08TXHEe60ZZ9pE7I02g" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_I3hFQDXIEe60ZZ9pE7I02g">
+      <children xsi:type="basic:PartStack" xmi:id="_e_Q08TXHEe60ZZ9pE7I02g" elementId="org.eclipse.e4.primaryDataStack" selectedElement="_5uk2AIhiEe6NVvVEW9fynw">
         <tags>org.eclipse.e4.primaryDataStack</tags>
         <tags>EditorStack</tags>
         <tags>active</tags>
-        <children xsi:type="basic:Part" xmi:id="_I3hFQDXIEe60ZZ9pE7I02g" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="expense.jrxml" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jrxml_icon.png" closeable="true">
-          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;expense.jrxml&quot; partName=&quot;expense.jrxml&quot; title=&quot;expense.jrxml&quot; tooltip=&quot;MyReports/src/expense.jrxml&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/MyReports/src/expense.jrxml&quot;/>&#xD;&#xA;&lt;/editor>"/>
+        <children xsi:type="basic:Part" xmi:id="_5uk2AIhiEe6NVvVEW9fynw" elementId="org.eclipse.e4.ui.compatibility.editor" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityEditor" label="leads.jrxml" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jrxml_icon.png" closeable="true">
+          <persistedState key="memento" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?>&#xD;&#xA;&lt;editor id=&quot;com.jaspersoft.studio.editor.JrxmlEditor&quot; name=&quot;leads.jrxml&quot; partName=&quot;leads.jrxml&quot; title=&quot;leads.jrxml&quot; tooltip=&quot;source/MyReports/src/leads.jrxml&quot;>&#xD;&#xA;&lt;input factoryID=&quot;org.eclipse.ui.part.FileEditorInputFactory&quot; path=&quot;/source/MyReports/src/leads.jrxml&quot;/>&#xD;&#xA;&lt;/editor>"/>
           <tags>Editor</tags>
           <tags>removeOnHide</tags>
           <tags>com.jaspersoft.studio.editor.JrxmlEditor</tags>
@@ -218,7 +218,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_e3pKADXHEe60ZZ9pE7I02g" elementId="org.eclipse.ui.workbench.file">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_unsdwDsqEe6qP4SwN5d5oA" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_dI7lizXHEe60ZZ9pE7I02g"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_EgvjoIhZEe6NVvVEW9fynw" elementId="print" visible="false" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/print_edit.png" tooltip="Print" command="_dI7lizXHEe60ZZ9pE7I02g"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_e3pxEDXHEe60ZZ9pE7I02g" elementId="additions" toBeRendered="false">
         <tags>toolbarSeparator</tags>
@@ -236,7 +236,7 @@
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_e3pxFDXHEe60ZZ9pE7I02g" elementId="org.eclipse.ui.workbench.navigate">
         <tags>Draggable</tags>
-        <children xsi:type="menu:HandledToolItem" xmi:id="_un4D8TsqEe6qP4SwN5d5oA" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_dI5JRTXHEe60ZZ9pE7I02g"/>
+        <children xsi:type="menu:HandledToolItem" xmi:id="_Eg4tlYhZEe6NVvVEW9fynw" elementId="org.eclipse.ui.window.pinEditor" iconURI="platform:/plugin/org.eclipse.ui/icons/full/etool16/pin_editor.png" tooltip="Pin Editor" type="Check" command="_dI5JRTXHEe60ZZ9pE7I02g"/>
       </children>
       <children xsi:type="menu:ToolBar" xmi:id="_H-9v0DXMEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.graphic.text" visible="false">
         <tags>Draggable</tags>
@@ -1114,42 +1114,42 @@
     <tags>View</tags>
     <tags>categoryTag:Plug-in Development</tags>
   </descriptors>
-  <descriptors xmi:id="_eyQ6wDXHEe60ZZ9pE7I02g" elementId="net.sf.jasperreports.views.reportPreview" label="Preview" iconURI="platform:/plugin/net.sf.jasperreports/icons/jr_icon.png" tooltip="" category="Jaspersoft Studio" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_eyQ6wDXHEe60ZZ9pE7I02g" elementId="net.sf.jasperreports.views.reportPreview" label="Preview" iconURI="platform:/plugin/net.sf.jasperreports/icons/jr_icon.png" tooltip="" category="JasperReports" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <persistedState key="originalCompatibilityViewClass" value="net.sf.jasperreports.eclipse.ui.ReportPreviewView"/>
     <persistedState key="originalCompatibilityViewBundle" value="net.sf.jasperreports"/>
     <tags>View</tags>
     <tags>categoryTag:Jaspersoft Studio</tags>
     <tags>categoryTag:JasperReports</tags>
   </descriptors>
-  <descriptors xmi:id="_eyQ6wTXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.Repository" label="Repository Explorer" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jr_icon.png" tooltip="" category="Jaspersoft Studio" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_eyQ6wTXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.Repository" label="Repository Explorer" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jr_icon.png" tooltip="" category="JasperReports" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <persistedState key="originalCompatibilityViewClass" value="com.jaspersoft.studio.repository.RepositoryView"/>
     <persistedState key="originalCompatibilityViewBundle" value="com.jaspersoft.studio"/>
     <tags>View</tags>
     <tags>categoryTag:Jaspersoft Studio</tags>
     <tags>categoryTag:JasperReports</tags>
   </descriptors>
-  <descriptors xmi:id="_eySv8DXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.editor.preview.reportstate" label="Report State" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jrxml_icon.png" tooltip="" category="Jaspersoft Studio" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_eySv8DXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.editor.preview.reportstate" label="Report State" iconURI="platform:/plugin/com.jaspersoft.studio/icons/jrxml_icon.png" tooltip="" category="JasperReports" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <persistedState key="originalCompatibilityViewClass" value="com.jaspersoft.studio.editor.preview.ReportStateView"/>
     <persistedState key="originalCompatibilityViewBundle" value="com.jaspersoft.studio"/>
     <tags>View</tags>
     <tags>categoryTag:Jaspersoft Studio</tags>
     <tags>categoryTag:JasperReports</tags>
   </descriptors>
-  <descriptors xmi:id="_eySv8TXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.templateStyleView" label="Template View" iconURI="platform:/plugin/com.jaspersoft.studio/icons/resources/style-16.png" tooltip="" category="Jaspersoft Studio" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_eySv8TXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.templateStyleView" label="Template View" iconURI="platform:/plugin/com.jaspersoft.studio/icons/resources/style-16.png" tooltip="" category="JasperReports" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <persistedState key="originalCompatibilityViewClass" value="com.jaspersoft.studio.style.view.TemplateStyleView"/>
     <persistedState key="originalCompatibilityViewBundle" value="com.jaspersoft.studio"/>
     <tags>View</tags>
     <tags>categoryTag:Jaspersoft Studio</tags>
     <tags>categoryTag:JasperReports</tags>
   </descriptors>
-  <descriptors xmi:id="_eySv8jXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.FormattingToolsView" label="Formatting Tools" iconURI="platform:/plugin/com.jaspersoft.studio/icons/resources/formatting/formattingtools.png" tooltip="" category="Jaspersoft Studio" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_eySv8jXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.FormattingToolsView" label="Formatting Tools" iconURI="platform:/plugin/com.jaspersoft.studio/icons/resources/formatting/formattingtools.png" tooltip="" category="JasperReports" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <persistedState key="originalCompatibilityViewClass" value="com.jaspersoft.studio.style.view.FormattingToolsView"/>
     <persistedState key="originalCompatibilityViewBundle" value="com.jaspersoft.studio"/>
     <tags>View</tags>
     <tags>categoryTag:Jaspersoft Studio</tags>
     <tags>categoryTag:JasperReports</tags>
   </descriptors>
-  <descriptors xmi:id="_eyVzQDXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.debug.trace" label="Trace Report View" iconURI="platform:/plugin/org.eclipse.ui/icons/full/eview16/defaultview_misc.png" tooltip="" category="Jaspersoft Studio" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
+  <descriptors xmi:id="_eyVzQDXHEe60ZZ9pE7I02g" elementId="com.jaspersoft.studio.debug.trace" label="Trace Report View" iconURI="platform:/plugin/org.eclipse.ui/icons/full/eview16/defaultview_misc.png" tooltip="" category="JasperReports" closeable="true" contributionURI="bundleclass://org.eclipse.ui.workbench/org.eclipse.ui.internal.e4.compatibility.CompatibilityView">
     <persistedState key="originalCompatibilityViewClass" value="com.jaspersoft.studio.debug.TraceView"/>
     <persistedState key="originalCompatibilityViewBundle" value="com.jaspersoft.studio"/>
     <tags>View</tags>
@@ -2039,7 +2039,7 @@
   <addons xmi:id="_dH0yRTXHEe60ZZ9pE7I02g" elementId="MinMax Addon" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.minmax.MinMaxAddon"/>
   <addons xmi:id="_dH0yRjXHEe60ZZ9pE7I02g" elementId="org.eclipse.ui.workbench.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.workbench" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_dIEp0DXHEe60ZZ9pE7I02g" elementId="SplitterAddon" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.addons.swt/org.eclipse.e4.ui.workbench.addons.splitteraddon.SplitterAddon"/>
-  <addons xmi:id="_IYS0IKimEeS11vbz3f9ezw" elementId="org.eclipse.ui.ide.addon.0" contributorURI="platform:/plugin/org.eclipse.ui.ide" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
+  <addons xmi:id="_CcyH0IhZEe6NVvVEW9fynw" elementId="org.eclipse.ui.ide.addon.0" contributionURI="bundleclass://org.eclipse.ui.ide/org.eclipse.ui.internal.ide.addons.SaveAllDirtyPartsAddon"/>
   <categories xmi:id="_dIuxIDXHEe60ZZ9pE7I02g" elementId="org.eclipse.ui.category.views" name="Views" description="Commands for opening views"/>
   <categories xmi:id="_dIuxITXHEe60ZZ9pE7I02g" elementId="org.eclipse.team.ui.category.team" name="Version control (Team)" description="Actions that apply when working with a version control system"/>
   <categories xmi:id="_dIuxIjXHEe60ZZ9pE7I02g" elementId="org.eclipse.ui.category.edit" name="Edit"/>

@@ -20,8 +20,8 @@ class JasperController extends Controller
         return $files;
     }
     static function UpdateReports($file = ""){
+        $path = storage_path('app\report\source\MyReports\src');
         if($file != ""){
-            $path = storage_path('app\report\source\MyReports\src');
             $file .= ".jrxml";
             $file = $path."\\".$file;
             if (file_exists($file)) {
