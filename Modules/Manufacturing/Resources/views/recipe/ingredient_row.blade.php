@@ -34,7 +34,7 @@
 	</td>
 	<td>
 		<div class="@if(empty($ingredient->sub_units)) input-group @else input_inline @endif">
-			{!! Form::text('ingredients[' . $row_index . '][quantity]', !empty($ingredient->quantity) ? @num_format($ingredient->quantity) : 1, ['class' => 'form-control input_number quantity input-sm', 'placeholder' => __('lang_v1.quantity'), 'required']); !!}
+			{!! Form::text('ingredients[' . $row_index . '][quantity]', !empty($ingredient->quantity) ? @format_quantity($ingredient->quantity) : 1, ['class' => 'form-control input_number quantity input-sm', 'placeholder' => __('lang_v1.quantity'), 'required']); !!}
 			<span class="@if(empty($ingredient->sub_units)) input-group-addon @endif">
 				@if(!empty($ingredient->sub_units))
 					<select name="ingredients[{{$row_index}}][sub_unit_id]" class="form-control input-sm row_sub_unit_id">
